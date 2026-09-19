@@ -30,7 +30,7 @@ export const Footer: React.FC = () => {
             </a>
           </li>
           <li>
-            <a href="mailto:contact@brwyatt.net" aria-label="Email Bryan">
+            <a href="mailto:brwyatt@brwyatt.net" aria-label="Email Bryan">
               <Mail size={18} />
             </a>
           </li>

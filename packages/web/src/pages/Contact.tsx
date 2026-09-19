@@ -14,7 +14,7 @@ export const Contact: React.FC = () => {
           <Mail size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
           <h3 className="card-title">Email</h3>
           <p className="card-description">For direct inquiries or communication.</p>
-          <a href="mailto:contact@brwyatt.net">contact@brwyatt.net</a>
+          <a href="mailto:brwyatt@brwyatt.net">brwyatt@brwyatt.net</a>
         </div>
 
         <div className="card">
@@ -39,7 +39,7 @@ export const Contact: React.FC = () => {
           <Key size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
           <h3 className="card-title">OpenPGP / WKD</h3>
           <p className="card-description">
-            Automatic Web Key Directory (WKD) key discovery for contact@brwyatt.net.
+            Automatic Web Key Directory (WKD) key discovery for brwyatt@brwyatt.net.
           </p>
           <a
             href="/.well-known/openpgpkey/hu/39z93up6pguuos5fb5cyx8yxzp3t9foa"
