@@ -94,3 +94,34 @@ Deployments must follow a staged promotion workflow:
 - **Default Branch:** `main` (protected; no direct commits).
 - **Agent Branch Pattern:** All automated agent branches must follow `agent-homelab-sre/<feature-or-fix-kebab-case>`.
 - **Clean Commits:** Run `npm run lint` and `npm run typecheck` before committing. Ensure diffs are minimal and focused.
+
+---
+
+## 7. Observability, Logging & Alerting Guidelines
+
+Observability must balance operational visibility against personal cloud budget constraints. Avoid creating high-cost enterprise monitoring constructs for low-traffic personal services.
+
+### 7.1 Current Static Site Baseline
+
+- **CloudFront Standard Metrics:** CloudFront emits 1-minute metrics (`5xxErrorRate`, `4xxErrorRate`, `Requests`, `BytesDownloaded`) to CloudWatch in `us-east-1` at zero additional metric cost.
+- **Metric Alarms:** Utilize AWS Free Tier metric alarms (10 permanent free alarms) for:
+  - CloudFront `5xxErrorRate > 1%` over 5 minutes.
+  - AWS account-level `EstimatedCharges` billing alarm.
+- **Access Logging:** If standard CloudFront access logging is enabled:
+  - Logs MUST be written to an S3 logging bucket with an explicit **S3 Lifecycle rule** (e.g. expire/delete logs after 30–90 days).
+  - NEVER enable Kinesis-based CloudFront real-time logs (incurs minimum ~$11/month per active shard).
+- **Uptime Probing:** Avoid CloudWatch Synthetics headless canaries (~$10–$15/month per canary). Prefer lightweight alternatives: Route 53 HTTPS health checks (~$0.50/month) or external free monitoring/CI scheduled smoke pings.
+
+### 7.2 Triggers for Enhanced Observability
+
+When architecture scope expands beyond static hosting, enforce the following CDK standards:
+
+1. **When introducing AWS Lambda:**
+   - **Log Retention:** MUST explicitly configure `logRetention: RetentionDays.ONE_WEEK` (or `ONE_MONTH`). CloudWatch log groups default to `Never Expire` which generates unbounded, permanent storage charges.
+   - **Alarms:** Configure alarms for Lambda `Errors > 0` and `Throttles > 0`.
+2. **When introducing Amazon API Gateway:**
+   - Enable API Gateway execution and access logging with explicit CloudWatch Log retention.
+   - Configure alarms for `5XXError` rate spikes.
+3. **When introducing DynamoDB or Datastores:**
+   - Configure alarms for `SystemErrors` and read/write throttle events.
+   - Use On-Demand (pay-per-request) billing mode by default to avoid idling provisioned capacity fees.
