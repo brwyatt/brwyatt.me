@@ -32,7 +32,7 @@ const prodConfig: PortfolioConfig = {
   account: awsAccount,
 };
 
-new PortfolioStack(app, 'BrwyattMe-Prod', prodConfig, {
+const prodStack = new PortfolioStack(app, 'BrwyattMe-Prod', prodConfig, {
   env: { account: prodConfig.account, region: awsRegion },
   description: 'Production portfolio stack for brwyatt.me',
 });
