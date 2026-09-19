@@ -8,7 +8,7 @@ describe('RedirectStack', () => {
   const app = new cdk.App();
   const config: RedirectConfig = {
     targetDomain: 'https://brwyatt.me',
-    awsAccount: '123456789012',
+    account: '123456789012',
     domains: [
       { domainName: 'brwyatt.net', hostedZoneId: 'Z22I3V5KI0TD1U' },
       { domainName: 'brwyatt.com', hostedZoneId: 'ZDRNDVJ8GECH8' },
