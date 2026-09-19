@@ -53,7 +53,9 @@ const redirectConfig: RedirectConfig = {
   ],
 };
 
-new RedirectStack(app, 'BrwyattLegacyRedirectStack', redirectConfig, {
+new RedirectStack(app, 'BrwyattLegacyRedirectStack', {
+  config: redirectConfig,
+  originBucket: prodStack.siteBucket,
   env: { account: redirectConfig.account, region: awsRegion },
   description: 'Redirects brwyatt.net and brwyatt.com to https://brwyatt.me',
 });

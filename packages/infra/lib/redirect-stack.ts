@@ -8,22 +8,17 @@ import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { Construct } from 'constructs';
 import { RedirectConfig } from './types';
 
+export interface RedirectStackProps extends cdk.StackProps {
+  config: RedirectConfig;
+  originBucket: s3.IBucket;
+}
+
 export class RedirectStack extends cdk.Stack {
-  public readonly staticInfraBucket: s3.Bucket;
-
-  constructor(scope: Construct, id: string, config: RedirectConfig, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: RedirectStackProps) {
     super(scope, id, props);
+    const { config, originBucket } = props;
 
-    // 1. S3 Bucket hosting static infrastructure files (.well-known/*, keybase.txt, robots.txt)
-    this.staticInfraBucket = new s3.Bucket(this, 'StaticInfraBucket', {
-      bucketName: 'brwyatt-infra-static-assets',
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      enforceSSL: true,
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
-    });
-
-    // 2. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
+    // 1. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
     const redirectFunction = new cloudfront.Function(this, 'SelectiveRedirectFunction', {
       code: cloudfront.FunctionCode.fromInline(`
 function handler(event) {
@@ -53,7 +48,7 @@ function handler(event) {
       `),
     });
 
-    // 3. CORS & Security Response Header Policy for .well-known / WKD
+    // 2. CORS & Security Response Header Policy for .well-known / WKD
     const wellKnownResponseHeaders = new cloudfront.ResponseHeadersPolicy(
       this,
       'WellKnownHeaders',
@@ -91,10 +86,10 @@ function handler(event) {
         validation: acm.CertificateValidation.fromDns(zone),
       });
 
-      // CloudFront distribution fronting S3 Origin with Selective Redirect Function
+      // CloudFront distribution fronting the shared S3 Origin with Selective Redirect Function
       const dist = new cloudfront.Distribution(this, `Dist-${domain.domainName}`, {
         defaultBehavior: {
-          origin: origins.S3BucketOrigin.withOriginAccessControl(this.staticInfraBucket),
+          origin: origins.S3BucketOrigin.withOriginAccessControl(originBucket),
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           functionAssociations: [
             {

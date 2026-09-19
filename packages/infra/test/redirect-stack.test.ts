@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { describe, it, expect } from 'vitest';
 import { RedirectStack } from '../lib/redirect-stack';
@@ -6,6 +7,11 @@ import { RedirectConfig } from '../lib/types';
 
 describe('RedirectStack', () => {
   const app = new cdk.App();
+  const testStack = new cdk.Stack(app, 'TestOriginStack', {
+    env: { account: '123456789012', region: 'us-east-1' },
+  });
+  const testBucket = new s3.Bucket(testStack, 'SharedBucket');
+
   const config: RedirectConfig = {
     targetDomain: 'https://brwyatt.me',
     account: '123456789012',
@@ -15,7 +21,9 @@ describe('RedirectStack', () => {
     ],
   };
 
-  const stack = new RedirectStack(app, 'TestRedirectStack', config, {
+  const stack = new RedirectStack(app, 'TestRedirectStack', {
+    config,
+    originBucket: testBucket,
     env: { account: '123456789012', region: 'us-east-1' },
   });
   const template = Template.fromStack(stack);
