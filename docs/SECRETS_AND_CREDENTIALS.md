@@ -4,7 +4,7 @@
 
 - **Zero Plaintext Secrets:** No passwords, access keys, or API tokens are checked into this repository.
 - **No Long-Lived IAM User Keys:** Deployment authentication is managed strictly through **AWS IAM OpenID Connect (OIDC)** identity providers federated with GitHub Actions.
-- **Least Privilege:** Staging roles and Production roles are separated.
+- **Least Privilege:** Beta roles and Production roles are separated.
 
 ---
 
@@ -12,10 +12,10 @@
 
 When creating the repository on GitHub, configure the following secrets under **Settings > Secrets and variables > Actions**:
 
-| Secret Name            | Description                                       | Example / Format                                                 |
-| ---------------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
-| `AWS_ROLE_ARN_STAGING` | IAM Role ARN assumed for deploying Beta (Staging) | `arn:aws:iam::177542564244:role/GitHubActions-BrwyattMe-Staging` |
-| `AWS_ROLE_ARN_PROD`    | IAM Role ARN assumed for deploying Production     | `arn:aws:iam::177542564244:role/GitHubActions-BrwyattMe-Prod`    |
+| Secret Name         | Description                                   | Example / Format                                              |
+| ------------------- | --------------------------------------------- | ------------------------------------------------------------- |
+| `AWS_ROLE_ARN_BETA` | IAM Role ARN assumed for deploying Beta       | `arn:aws:iam::177542564244:role/GitHubActions-BrwyattMe-Beta` |
+| `AWS_ROLE_ARN_PROD` | IAM Role ARN assumed for deploying Production | `arn:aws:iam::177542564244:role/GitHubActions-BrwyattMe-Prod` |
 
 ---
 
@@ -31,7 +31,7 @@ aws iam create-open-id-connect-provider \
   --thumbprint-list 6938fd4d98bab03faadb97b34396831e3780aea1 1c58a3a8518e8759bf075b76b750d4f8d264fcd9
 ```
 
-### Trust Policy for `GitHubActions-BrwyattMe-Staging`:
+### Trust Policy for `GitHubActions-BrwyattMe-Beta`:
 
 ```json
 {

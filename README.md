@@ -9,7 +9,7 @@ Modern personal portfolio website and AWS CDK infrastructure for `brwyatt.me` an
   - **Private S3 Origin** with CloudFront Origin Access Control (OAC).
   - **Explicit ACM Certificates** with automated Route 53 DNS validation.
   - **Domain Redirect Stack**: 301 redirects `brwyatt.net` and `brwyatt.com` to `https://brwyatt.me/`.
-- **CI/CD Pipeline**: GitHub Actions with staging (`beta.brwyatt.me`) promotion and automated smoke tests.
+- **CI/CD Pipeline**: GitHub Actions with Beta (`beta.brwyatt.me`) promotion and automated smoke tests.
 
 ---
 
