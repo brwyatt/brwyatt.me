@@ -84,7 +84,7 @@ Deployments must follow a staged promotion workflow:
 
 1. **Local:** `npm run dev` in `packages/web` (offline).
 2. **Pull Request / CI:** Automated linting, typechecking, and unit tests.
-3. **Beta / Gamma (Staging):** Automated deployment to staging environment followed by integration smoke tests.
+3. **Beta:** Automated deployment to beta environment followed by integration smoke tests.
 4. **Prod:** Manual promotion gate requiring review before updating production S3 assets and CloudFront caches.
 
 ---

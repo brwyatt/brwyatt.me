@@ -9,7 +9,7 @@ const app = new cdk.App();
 const awsAccount = process.env.CDK_DEFAULT_ACCOUNT || '177542564244';
 const awsRegion = 'us-east-1'; // CloudFront requires certificates in us-east-1
 
-// Staging (Beta) Stack
+// Beta Stack
 const betaConfig: PortfolioConfig = {
   stage: 'beta',
   domainName: 'beta.brwyatt.me',
@@ -20,7 +20,7 @@ const betaConfig: PortfolioConfig = {
 
 new PortfolioStack(app, 'BrwyattMe-Beta', betaConfig, {
   env: { account: betaConfig.account, region: awsRegion },
-  description: 'Staging (Beta) stack for brwyatt.me',
+  description: 'Beta stack for brwyatt.me',
 });
 
 // Production Stack

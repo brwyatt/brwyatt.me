@@ -1,4 +1,4 @@
-name: Deploy Staging (Beta)
+name: Deploy Beta
 
 on:
   push:
@@ -10,10 +10,10 @@ permissions:
   contents: read
 
 jobs:
-  deploy-staging:
-    name: Deploy to Beta (Staging)
+  deploy-beta:
+    name: Deploy to Beta
     runs-on: ubuntu-latest
-    environment: staging
+    environment: beta
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STAGING }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_BETA }}
           aws-region: us-east-1
           audience: sts.amazonaws.com
 
@@ -53,5 +53,5 @@ jobs:
             aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
           fi
 
-      - name: Run Staging Smoke Tests
+      - name: Run Beta Smoke Tests
         run: bash scripts/smoke-test.sh https://beta.brwyatt.me

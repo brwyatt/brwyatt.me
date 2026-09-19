@@ -66,6 +66,17 @@ function handler(event) {
       },
     );
 
+    // 3. Dedicated Origin Access Control (without modifying cross-stack bucket policy)
+    const oac = new cloudfront.S3OriginAccessControl(this, 'RedirectOAC', {
+      originAccessControlName: 'BrwyattRedirectOAC',
+      signing: cloudfront.Signing.SIGV4_ALWAYS,
+    });
+
+    const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(originBucket, {
+      originAccessControl: oac,
+      originAccessLevels: [], // Prevents cross-stack cyclic reference
+    });
+
     for (const domain of config.domains) {
       const zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${domain.domainName}`, {
         hostedZoneId: domain.hostedZoneId,
@@ -89,7 +100,7 @@ function handler(event) {
       // CloudFront distribution fronting the shared S3 Origin with Selective Redirect Function
       const dist = new cloudfront.Distribution(this, `Dist-${domain.domainName}`, {
         defaultBehavior: {
-          origin: origins.S3BucketOrigin.withOriginAccessControl(originBucket),
+          origin: s3Origin,
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           functionAssociations: [
             {

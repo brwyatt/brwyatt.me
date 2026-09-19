@@ -97,6 +97,20 @@ export class PortfolioStack extends cdk.Stack {
       minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
     });
 
+    // Allow CloudFront distributions in this account to read public assets via OAC
+    this.siteBucket.addToResourcePolicy(
+      new cdk.aws_iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: [this.siteBucket.arnForObjects('*')],
+        principals: [new cdk.aws_iam.ServicePrincipal('cloudfront.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'AWS:SourceAccount': this.account,
+          },
+        },
+      }),
+    );
+
     // 6. Route 53 A and AAAA Alias Records
     new route53.ARecord(this, 'SiteAliasRecord', {
       zone,
