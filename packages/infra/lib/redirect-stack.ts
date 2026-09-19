@@ -18,6 +18,12 @@ export class RedirectStack extends cdk.Stack {
     super(scope, id, props);
     const { config, originBucket } = props;
 
+    // Import the bucket by attributes within this stack to prevent CDK cross-stack cycle
+    const importedBucket = s3.Bucket.fromBucketAttributes(this, 'ImportedOriginBucket', {
+      bucketName: originBucket.bucketName,
+      bucketRegionalDomainName: originBucket.bucketRegionalDomainName,
+    });
+
     // 1. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
     const redirectFunction = new cloudfront.Function(this, 'SelectiveRedirectFunction', {
       code: cloudfront.FunctionCode.fromInline(`
@@ -66,15 +72,14 @@ function handler(event) {
       },
     );
 
-    // 3. Dedicated Origin Access Control (without modifying cross-stack bucket policy)
+    // 3. Dedicated Origin Access Control
     const oac = new cloudfront.S3OriginAccessControl(this, 'RedirectOAC', {
       originAccessControlName: 'BrwyattRedirectOAC',
       signing: cloudfront.Signing.SIGV4_ALWAYS,
     });
 
-    const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(originBucket, {
+    const s3Origin = origins.S3BucketOrigin.withOriginAccessControl(importedBucket, {
       originAccessControl: oac,
-      originAccessLevels: [], // Prevents cross-stack cyclic reference
     });
 
     for (const domain of config.domains) {
