@@ -9,6 +9,7 @@ build/
 out/
 cdk.out/
 *.tsbuildinfo
+packages/infra/dist/
 
 # Local Environment & Secrets
 .env
