@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { describe, it, expect } from 'vitest';
 import { RedirectStack } from '../lib/redirect-stack';
 import { RedirectConfig } from '../lib/types';
@@ -20,20 +20,19 @@ describe('RedirectStack', () => {
   });
   const template = Template.fromStack(stack);
 
-  it('configures S3 website redirection to brwyatt.me', () => {
-    template.hasResourceProperties('AWS::S3::Bucket', {
-      WebsiteConfiguration: {
-        RedirectAllRequestsTo: {
-          HostName: 'brwyatt.me',
-          Protocol: 'https',
-        },
-      },
+  it('provisions a CloudFront function for selective redirection', () => {
+    template.hasResourceProperties('AWS::CloudFront::Function', {
+      FunctionCode: Match.stringLikeRegexp('uri\\.startsWith'),
     });
   });
 
-  it('creates Route 53 alias records for each redirect domain', () => {
+  it('creates Route 53 alias records for redirect domains including mta-sts', () => {
     template.hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'brwyatt.net.',
+      Type: 'A',
+    });
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'mta-sts.brwyatt.net.',
       Type: 'A',
     });
     template.hasResourceProperties('AWS::Route53::RecordSet', {

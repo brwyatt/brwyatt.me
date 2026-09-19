@@ -9,19 +9,67 @@ import { Construct } from 'constructs';
 import { RedirectConfig } from './types';
 
 export class RedirectStack extends cdk.Stack {
+  public readonly staticInfraBucket: s3.Bucket;
+
   constructor(scope: Construct, id: string, config: RedirectConfig, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // 1. S3 Bucket configured with Website Redirection
-    const redirectBucket = new s3.Bucket(this, 'RedirectBucket', {
-      bucketName: 'brwyatt-legacy-redirector',
-      websiteRedirect: {
-        hostName: config.targetDomain.replace(/^https?:\/\//, ''),
-        protocol: s3.RedirectProtocol.HTTPS,
-      },
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    // 1. S3 Bucket hosting static infrastructure files (.well-known/*, keybase.txt, robots.txt)
+    this.staticInfraBucket = new s3.Bucket(this, 'StaticInfraBucket', {
+      bucketName: 'brwyatt-infra-static-assets',
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
+
+    // 2. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
+    const redirectFunction = new cloudfront.Function(this, 'SelectiveRedirectFunction', {
+      code: cloudfront.FunctionCode.fromInline(`
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
+
+  // Pass-through paths required by email, federation, and identity protocols
+  if (
+    uri.startsWith('/.well-known/') ||
+    uri === '/keybase.txt' ||
+    uri === '/robots.txt'
+  ) {
+    return request;
+  }
+
+  // All other paths 301 redirect to https://brwyatt.me/
+  var redirectUrl = '${config.targetDomain}' + uri;
+  return {
+    statusCode: 301,
+    statusDescription: 'Moved Permanently',
+    headers: {
+      'location': { value: redirectUrl },
+      'cache-control': { value: 'public, max-age=86400' }
+    }
+  };
+}
+      `),
+    });
+
+    // 3. CORS & Security Response Header Policy for .well-known / WKD
+    const wellKnownResponseHeaders = new cloudfront.ResponseHeadersPolicy(
+      this,
+      'WellKnownHeaders',
+      {
+        corsBehavior: {
+          accessControlAllowOrigins: ['*'],
+          accessControlAllowMethods: ['GET', 'HEAD', 'OPTIONS'],
+          accessControlAllowHeaders: ['*'],
+          accessControlAllowCredentials: false,
+          originOverride: true,
+        },
+        securityHeadersBehavior: {
+          contentTypeOptions: { override: true },
+        },
+      },
+    );
 
     for (const domain of config.domains) {
       const zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${domain.domainName}`, {
@@ -29,22 +77,33 @@ export class RedirectStack extends cdk.Stack {
         zoneName: domain.domainName,
       });
 
-      const domainNames = [domain.domainName, `www.${domain.domainName}`];
+      // Special subdomains like mta-sts.brwyatt.net
+      const domainNames = [
+        domain.domainName,
+        `www.${domain.domainName}`,
+        ...(domain.domainName === 'brwyatt.net' ? ['mta-sts.brwyatt.net'] : []),
+      ];
 
-      // Explicit ACM Certificate for this redirect domain
+      // Explicit ACM Certificate for this domain and aliases
       const cert = new acm.Certificate(this, `Cert-${domain.domainName}`, {
         domainName: domain.domainName,
-        subjectAlternativeNames: [`www.${domain.domainName}`],
+        subjectAlternativeNames: domainNames.filter((d) => d !== domain.domainName),
         validation: acm.CertificateValidation.fromDns(zone),
       });
 
-      // CloudFront distribution for the redirect domain
+      // CloudFront distribution fronting S3 Origin with Selective Redirect Function
       const dist = new cloudfront.Distribution(this, `Dist-${domain.domainName}`, {
         defaultBehavior: {
-          origin: new origins.HttpOrigin(redirectBucket.bucketWebsiteDomainName, {
-            protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
-          }),
+          origin: origins.S3BucketOrigin.withOriginAccessControl(this.staticInfraBucket),
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+          functionAssociations: [
+            {
+              function: redirectFunction,
+              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+            },
+          ],
+          responseHeadersPolicy: wellKnownResponseHeaders,
+          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         },
         domainNames,
         certificate: cert,
@@ -76,6 +135,21 @@ export class RedirectStack extends cdk.Stack {
         recordName: `www.${domain.domainName}`,
         target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
       });
+
+      // mta-sts A & AAAA records (for brwyatt.net)
+      if (domain.domainName === 'brwyatt.net') {
+        new route53.ARecord(this, 'MtaStsARecord', {
+          zone,
+          recordName: 'mta-sts.brwyatt.net',
+          target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
+        });
+
+        new route53.AaaaRecord(this, 'MtaStsAaaaRecord', {
+          zone,
+          recordName: 'mta-sts.brwyatt.net',
+          target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
+        });
+      }
     }
   }
 }

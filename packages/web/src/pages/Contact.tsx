@@ -14,7 +14,7 @@ export const Contact: React.FC = () => {
           <Mail size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
           <h3 className="card-title">Email</h3>
           <p className="card-description">For direct inquiries or communication.</p>
-          <a href="mailto:contact@brwyatt.me">contact@brwyatt.me</a>
+          <a href="mailto:contact@brwyatt.net">contact@brwyatt.net</a>
         </div>
 
         <div className="card">
@@ -37,11 +37,22 @@ export const Contact: React.FC = () => {
 
         <div className="card">
           <Key size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
-          <h3 className="card-title">Public Key / PGP</h3>
-          <p className="card-description">Cryptographic verification and secure communications.</p>
-          <a href="https://keybase.io/brwyatt" target="_blank" rel="noopener noreferrer">
-            keybase.io/brwyatt
+          <h3 className="card-title">OpenPGP / WKD</h3>
+          <p className="card-description">
+            Automatic Web Key Directory (WKD) key discovery for contact@brwyatt.net.
+          </p>
+          <a
+            href="/.well-known/openpgpkey/hu/39z93up6pguuos5fb5cyx8yxzp3t9foa"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Direct Key Download (WKD)
           </a>
+          <div style={{ marginTop: '0.5rem' }}>
+            <a href="https://keybase.io/brwyatt" target="_blank" rel="noopener noreferrer">
+              View on Keybase
+            </a>
+          </div>
         </div>
       </div>
     </div>
