@@ -8,7 +8,7 @@ describe('Navbar', () => {
     render(
       <BrowserRouter>
         <Navbar />
-      </BrowserRouter>
+      </BrowserRouter>,
     );
 
     expect(screen.getByText('Bryan Wyatt')).toBeInTheDocument();

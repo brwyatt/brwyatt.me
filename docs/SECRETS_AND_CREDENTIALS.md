@@ -1,9 +1,10 @@
 # Secrets, Credentials, and IAM OIDC Setup Guide
 
 ## 1. Core Principles
-* **Zero Plaintext Secrets:** No passwords, access keys, or API tokens are checked into this repository.
-* **No Long-Lived IAM User Keys:** Deployment authentication is managed strictly through **AWS IAM OpenID Connect (OIDC)** identity providers federated with GitHub Actions.
-* **Least Privilege:** Staging roles and Production roles are separated.
+
+- **Zero Plaintext Secrets:** No passwords, access keys, or API tokens are checked into this repository.
+- **No Long-Lived IAM User Keys:** Deployment authentication is managed strictly through **AWS IAM OpenID Connect (OIDC)** identity providers federated with GitHub Actions.
+- **Least Privilege:** Staging roles and Production roles are separated.
 
 ---
 
@@ -11,10 +12,10 @@
 
 When creating the repository on GitHub, configure the following secrets under **Settings > Secrets and variables > Actions**:
 
-| Secret Name | Description | Example / Format |
-|---|---|---|
+| Secret Name            | Description                                       | Example / Format                                                 |
+| ---------------------- | ------------------------------------------------- | ---------------------------------------------------------------- |
 | `AWS_ROLE_ARN_STAGING` | IAM Role ARN assumed for deploying Beta (Staging) | `arn:aws:iam::177542564244:role/GitHubActions-BrwyattMe-Staging` |
-| `AWS_ROLE_ARN_PROD` | IAM Role ARN assumed for deploying Production | `arn:aws:iam::177542564244:role/GitHubActions-BrwyattMe-Prod` |
+| `AWS_ROLE_ARN_PROD`    | IAM Role ARN assumed for deploying Production     | `arn:aws:iam::177542564244:role/GitHubActions-BrwyattMe-Prod`    |
 
 ---
 
@@ -31,6 +32,7 @@ aws iam create-open-id-connect-provider \
 ```
 
 ### Trust Policy for `GitHubActions-BrwyattMe-Staging`:
+
 ```json
 {
   "Version": "2012-10-17",
@@ -55,6 +57,7 @@ aws iam create-open-id-connect-provider \
 ```
 
 ### Trust Policy for `GitHubActions-BrwyattMe-Prod`:
+
 ```json
 {
   "Version": "2012-10-17",
@@ -81,11 +84,14 @@ aws iam create-open-id-connect-provider \
 ---
 
 ## 4. Local Testing Without AWS Credentials
+
 The web application (`packages/web`) runs completely offline and requires zero AWS credentials or configuration.
 Run:
+
 ```bash
 cd packages/web
 npm install
 npm run dev
 ```
+
 Mock projects will load automatically if offline or unauthenticated.

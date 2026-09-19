@@ -14,8 +14,8 @@ export const About: React.FC = () => {
           <h2 className="section-title">Background & Philosophy</h2>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>
             I am a Systems Development Engineer focused on infrastructure automation, Linux platform
-            engineering, and distributed computing. I design systems with an emphasis on reliability,
-            observability, and declarative management.
+            engineering, and distributed computing. I design systems with an emphasis on
+            reliability, observability, and declarative management.
           </p>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
             Outside of large-scale cloud services, I maintain a hyper-converged homelab environment

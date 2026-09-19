@@ -7,9 +7,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
-        <div>
-          &copy; {currentYear} Bryan Wyatt. All rights reserved.
-        </div>
+        <div>&copy; {currentYear} Bryan Wyatt. All rights reserved.</div>
         <ul className="footer-links">
           <li>
             <a
@@ -32,10 +30,7 @@ export const Footer: React.FC = () => {
             </a>
           </li>
           <li>
-            <a
-              href="mailto:contact@brwyatt.me"
-              aria-label="Email Bryan"
-            >
+            <a href="mailto:contact@brwyatt.me" aria-label="Email Bryan">
               <Mail size={18} />
             </a>
           </li>

@@ -27,14 +27,27 @@ export const Projects: React.FC = () => {
   return (
     <div>
       <section className="hero">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
           <div>
             <h1>Projects & Open Source</h1>
             <p>
               Featured systems tools, automation libraries, and open source projects from GitHub.
             </p>
           </div>
-          <button onClick={loadData} className="btn" disabled={isLoading} style={{ marginTop: '0.5rem' }}>
+          <button
+            onClick={loadData}
+            className="btn"
+            disabled={isLoading}
+            style={{ marginTop: '0.5rem' }}
+          >
             <RefreshCw size={16} className={isLoading ? 'spin' : ''} />
             {isLoading ? 'Updating...' : 'Refresh'}
           </button>
@@ -42,7 +55,15 @@ export const Projects: React.FC = () => {
       </section>
 
       {error && (
-        <div className="notice-box" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderColor: 'var(--warning)' }}>
+        <div
+          className="notice-box"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            borderColor: 'var(--warning)',
+          }}
+        >
           <AlertCircle size={18} color="var(--warning)" />
           <span>{error}</span>
         </div>

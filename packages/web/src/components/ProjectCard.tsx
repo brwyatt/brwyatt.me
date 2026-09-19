@@ -26,9 +26,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </a>
       </div>
 
-      <p className="card-description">
-        {project.description || 'No description provided.'}
-      </p>
+      <p className="card-description">{project.description || 'No description provided.'}</p>
 
       {project.topics && project.topics.length > 0 && (
         <div className="tag-list">

@@ -28,7 +28,9 @@ export class PortfolioStack extends cdk.Stack {
     // 2. Route 53 Hosted Zone lookup
     const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
       hostedZoneId: config.hostedZoneId,
-      zoneName: config.domainName.includes('.') ? config.domainName.split('.').slice(-2).join('.') : config.domainName,
+      zoneName: config.domainName.includes('.')
+        ? config.domainName.split('.').slice(-2).join('.')
+        : config.domainName,
     });
 
     // 3. Explicit ACM Certificate (CloudFront requires us-east-1)
@@ -40,31 +42,35 @@ export class PortfolioStack extends cdk.Stack {
     });
 
     // 4. Security Headers Response Policy
-    const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'SecurityHeadersPolicy', {
-      responseHeadersPolicyName: `BrwyattMeSecurityHeaders-${config.stage}`,
-      securityHeadersBehavior: {
-        strictTransportSecurity: {
-          accessControlMaxAge: cdk.Duration.days(365),
-          includeSubdomains: true,
-          preload: true,
-          override: true,
-        },
-        contentTypeOptions: { override: true },
-        frameOptions: {
-          frameOption: cloudfront.HeadersFrameOption.DENY,
-          override: true,
-        },
-        referrerPolicy: {
-          referrerPolicy: cloudfront.HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
-          override: true,
+    const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(
+      this,
+      'SecurityHeadersPolicy',
+      {
+        responseHeadersPolicyName: `BrwyattMeSecurityHeaders-${config.stage}`,
+        securityHeadersBehavior: {
+          strictTransportSecurity: {
+            accessControlMaxAge: cdk.Duration.days(365),
+            includeSubdomains: true,
+            preload: true,
+            override: true,
+          },
+          contentTypeOptions: { override: true },
+          frameOptions: {
+            frameOption: cloudfront.HeadersFrameOption.DENY,
+            override: true,
+          },
+          referrerPolicy: {
+            referrerPolicy: cloudfront.HeadersReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN,
+            override: true,
+          },
         },
       },
-    });
+    );
 
     // 5. CloudFront Distribution with Origin Access Control (OAC)
     this.distribution = new cloudfront.Distribution(this, 'SiteDistribution', {
       defaultBehavior: {
-        origin: new origins.S3Origin(this.siteBucket),
+        origin: origins.S3BucketOrigin.withOriginAccessControl(this.siteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
         cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD,

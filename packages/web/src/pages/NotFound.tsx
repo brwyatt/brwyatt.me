@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom';
 export const NotFound: React.FC = () => {
   return (
     <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
-      <h1 style={{ fontSize: '4rem', fontWeight: 800, color: 'var(--accent)', marginBottom: '1rem' }}>
+      <h1
+        style={{ fontSize: '4rem', fontWeight: 800, color: 'var(--accent)', marginBottom: '1rem' }}
+      >
         404
       </h1>
       <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>Page Not Found</h2>

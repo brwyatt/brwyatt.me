@@ -24,7 +24,7 @@ describe('PortfolioStack', () => {
       BucketEncryption: {
         ServerSideEncryptionConfiguration: [
           {
-            ServerSideEncryptionByDefault: {
+            ApplyServerSideEncryptionByDefault: {
               SSEAlgorithm: 'AES256',
             },
           },

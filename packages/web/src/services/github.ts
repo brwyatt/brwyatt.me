@@ -13,7 +13,8 @@ export const FALLBACK_PROJECTS: GithubRepo[] = [
     id: 101,
     name: 'dffmpeg',
     fullName: 'brwyatt/dffmpeg',
-    description: 'Centrally-coordinated distributed FFmpeg transcoding job manager and cluster worker nodes.',
+    description:
+      'Centrally-coordinated distributed FFmpeg transcoding job manager and cluster worker nodes.',
     htmlUrl: 'https://github.com/brwyatt/dffmpeg',
     homepage: null,
     language: 'Python',
@@ -28,7 +29,8 @@ export const FALLBACK_PROJECTS: GithubRepo[] = [
     id: 102,
     name: 'brwyatt.me',
     fullName: 'brwyatt/brwyatt.me',
-    description: 'Modern portfolio website and AWS CDK infrastructure for brwyatt.me and brwyatt.net.',
+    description:
+      'Modern portfolio website and AWS CDK infrastructure for brwyatt.me and brwyatt.net.',
     htmlUrl: 'https://github.com/brwyatt/brwyatt.me',
     homepage: 'https://brwyatt.me',
     language: 'TypeScript',
@@ -43,7 +45,8 @@ export const FALLBACK_PROJECTS: GithubRepo[] = [
     id: 103,
     name: 'ansible-config',
     fullName: 'brwyatt/ansible-config',
-    description: 'Declarative infrastructure-as-code configuration and automated orchestration for homelab nodes.',
+    description:
+      'Declarative infrastructure-as-code configuration and automated orchestration for homelab nodes.',
     htmlUrl: 'https://github.com/brwyatt/ansible-config',
     homepage: null,
     language: 'YAML',
@@ -92,7 +95,7 @@ export async function fetchGithubProjects(username: string = 'brwyatt'): Promise
         headers: {
           Accept: 'application/vnd.github.v3+json',
         },
-      }
+      },
     );
 
     if (!response.ok) {
