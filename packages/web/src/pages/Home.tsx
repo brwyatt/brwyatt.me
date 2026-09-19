@@ -1,16 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Server, Terminal, Shield, ArrowRight } from 'lucide-react';
+import { SITE_CONFIG } from '../data/site';
+import { FOCUS_AREAS, FocusArea } from '../data/focusAreas';
+import { InfoCard } from '../components/InfoCard';
+
+const ICON_MAP: Record<FocusArea['icon'], React.ReactNode> = {
+  server: <Server size={28} color="var(--accent)" />,
+  terminal: <Terminal size={28} color="var(--accent)" />,
+  shield: <Shield size={28} color="var(--accent)" />,
+};
 
 export const Home: React.FC = () => {
   return (
     <div>
       <section className="hero">
-        <h1>Bryan Wyatt</h1>
-        <p>
-          Systems Development Engineer specializing in Linux systems, distributed automation, and
-          high-reliability infrastructure.
-        </p>
+        <h1>{SITE_CONFIG.name}</h1>
+        <p>{SITE_CONFIG.tagline}</p>
         <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
           <Link to="/projects" className="btn btn-primary">
             Explore Projects <ArrowRight size={16} />
@@ -24,32 +30,14 @@ export const Home: React.FC = () => {
       <section>
         <h2 className="section-title">Focus Areas</h2>
         <div className="card-grid">
-          <div className="card">
-            <Server size={28} color="var(--accent)" style={{ marginBottom: '0.75rem' }} />
-            <h3 className="card-title">Distributed Systems & Automation</h3>
-            <p className="card-description">
-              Building resilient orchestration tooling, automated media processing pipelines
-              (dffmpeg), and declarative infrastructure.
-            </p>
-          </div>
-
-          <div className="card">
-            <Terminal size={28} color="var(--accent)" style={{ marginBottom: '0.75rem' }} />
-            <h3 className="card-title">Linux & Cloud Architecture</h3>
-            <p className="card-description">
-              Deep expertise in Linux kernel tuning, high-performance networking, AWS serverless
-              services, and modern Infrastructure-as-Code with AWS CDK.
-            </p>
-          </div>
-
-          <div className="card">
-            <Shield size={28} color="var(--accent)" style={{ marginBottom: '0.75rem' }} />
-            <h3 className="card-title">High-Availability Homelab</h3>
-            <p className="card-description">
-              Hyper-converged 6-node Proxmox VE cluster, multi-gigabit Ceph storage fabrics, FreeIPA
-              identity federation, and automated operations.
-            </p>
-          </div>
+          {FOCUS_AREAS.map((area) => (
+            <InfoCard
+              key={area.id}
+              title={area.title}
+              description={area.description}
+              icon={ICON_MAP[area.icon]}
+            />
+          ))}
         </div>
       </section>
     </div>

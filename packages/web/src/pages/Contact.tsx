@@ -1,5 +1,7 @@
 import React from 'react';
-import { Mail, Github, Linkedin, Key } from 'lucide-react';
+import { Mail, Key, Globe } from 'lucide-react';
+import { SITE_CONFIG, SOCIAL_LINKS } from '../data/site';
+import { InfoCard } from '../components/InfoCard';
 
 export const Contact: React.FC = () => {
   return (
@@ -10,50 +12,54 @@ export const Contact: React.FC = () => {
       </section>
 
       <div className="card-grid">
-        <div className="card">
-          <Mail size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
-          <h3 className="card-title">Email</h3>
-          <p className="card-description">For direct inquiries or communication.</p>
-          <a href="mailto:brwyatt@brwyatt.net">brwyatt@brwyatt.net</a>
-        </div>
+        {/* Email Card */}
+        <InfoCard
+          title="Email"
+          description="For direct inquiries or communication."
+          icon={<Mail size={24} color="var(--accent)" />}
+          link={{ href: `mailto:${SITE_CONFIG.email}`, label: SITE_CONFIG.email }}
+        />
 
-        <div className="card">
-          <Github size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
-          <h3 className="card-title">GitHub</h3>
-          <p className="card-description">Check out open source projects and code repositories.</p>
-          <a href="https://github.com/brwyatt" target="_blank" rel="noopener noreferrer">
-            github.com/brwyatt
-          </a>
-        </div>
+        {/* Social / Platform Cards */}
+        {SOCIAL_LINKS.map((item) => (
+          <InfoCard
+            key={item.name}
+            title={item.name}
+            description={`Connect via ${item.name}.`}
+            icon={<Globe size={24} color="var(--accent)" />}
+            link={{ href: item.url, label: item.url.replace(/^https?:\/\//, ''), isExternal: true }}
+          />
+        ))}
 
-        <div className="card">
-          <Linkedin size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
-          <h3 className="card-title">LinkedIn</h3>
-          <p className="card-description">Professional background and networking.</p>
-          <a href="https://linkedin.com/in/brwyatt" target="_blank" rel="noopener noreferrer">
-            linkedin.com/in/brwyatt
-          </a>
-        </div>
-
-        <div className="card">
-          <Key size={24} color="var(--accent)" style={{ marginBottom: '0.5rem' }} />
-          <h3 className="card-title">OpenPGP / WKD</h3>
-          <p className="card-description">
-            Automatic Web Key Directory (WKD) key discovery for brwyatt@brwyatt.net.
-          </p>
-          <a
-            href="/.well-known/openpgpkey/hu/39z93up6pguuos5fb5cyx8yxzp3t9foa"
-            target="_blank"
-            rel="noopener noreferrer"
+        {/* GPG / WKD Key Card */}
+        <InfoCard
+          title="OpenPGP / WKD Key"
+          description="My public GPG key is published for cryptographic verification and is discoverable via OpenPGP Web Key Directory (WKD)."
+          icon={<Key size={24} color="var(--accent)" />}
+        >
+          <div
+            style={{
+              marginTop: '0.75rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+            }}
           >
-            Direct Key Download (WKD)
-          </a>
-          <div style={{ marginTop: '0.5rem' }}>
-            <a href="https://keybase.io/brwyatt" target="_blank" rel="noopener noreferrer">
-              View on Keybase
+            <a href={SITE_CONFIG.gpg.wkdPath} target="_blank" rel="noopener noreferrer">
+              Direct Key Download (WKD)
             </a>
+            <a href={SITE_CONFIG.gpg.keybaseUrl} target="_blank" rel="noopener noreferrer">
+              View Key on Keybase
+            </a>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+              Fingerprint:
+              <br />
+              <code style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>
+                {SITE_CONFIG.gpg.fingerprint}
+              </code>
+            </div>
           </div>
-        </div>
+        </InfoCard>
       </div>
     </div>
   );

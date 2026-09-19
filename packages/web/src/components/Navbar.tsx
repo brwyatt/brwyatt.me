@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Terminal } from 'lucide-react';
+import { SITE_CONFIG, NAV_LINKS } from '../data/site';
 
 export const Navbar: React.FC = () => {
   return (
@@ -8,43 +9,21 @@ export const Navbar: React.FC = () => {
       <div className="header-inner">
         <NavLink to="/" className="site-title">
           <Terminal size={20} color="var(--accent)" />
-          <span>Bryan Wyatt</span>
+          <span>{SITE_CONFIG.name}</span>
         </NavLink>
         <nav>
           <ul className="nav-links">
-            <li>
-              <NavLink
-                to="/"
-                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-                end
-              >
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/about"
-                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-              >
-                About
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/projects"
-                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-              >
-                Projects
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/contact"
-                className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
-              >
-                Contact
-              </NavLink>
-            </li>
+            {NAV_LINKS.map((link) => (
+              <li key={link.path}>
+                <NavLink
+                  to={link.path}
+                  className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+                  end={link.path === '/'}
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
