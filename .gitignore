@@ -11,10 +11,12 @@ cdk.out/
 *.tsbuildinfo
 packages/infra/dist/
 
-# Local Environment & Secrets
+# Local Environment, Temporary Context & Secrets
 .env
 .env.local
 .env.*.local
+.context/
+*.draft.md
 *.pem
 *.key
 *.cert
