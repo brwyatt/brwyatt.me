@@ -1,0 +1,27 @@
+{
+  "name": "@brwyatt/infra",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "vitest run",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts --max-warnings 0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "aws-cdk": "^2.135.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.3",
+    "vitest": "^1.4.0"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.135.0",
+    "constructs": "^10.3.0"
+  }
+}

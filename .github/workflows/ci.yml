@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'agent-homelab-sre/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Lint, Test, and Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check code formatting
+        run: npm run format:check
+
+      - name: Typecheck workspaces
+        run: npm run typecheck
+
+      - name: Run Web unit tests
+        run: npm run test -w @brwyatt/web
+
+      - name: Run Infra CDK tests
+        run: npm run test -w @brwyatt/infra
+
+      - name: Build Web bundle (Hermetic / Offline)
+        run: npm run build -w @brwyatt/web
+
+      - name: Validate CDK synthesis
+        run: npm run synth -w @brwyatt/infra
