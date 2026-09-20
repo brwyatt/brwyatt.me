@@ -40,7 +40,7 @@ aws iam create-open-id-connect-provider \
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::177542564244:oidc-provider/token.actions.githubusercontent.com"
+        "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
@@ -48,7 +48,10 @@ aws iam create-open-id-connect-provider \
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
         },
         "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:brwyatt/brwyatt.me:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": [
+            "repo:brwyatt/brwyatt.me:environment:beta",
+            "repo:brwyatt/brwyatt.me:ref:refs/heads/main"
+          ]
         }
       }
     }
@@ -65,7 +68,7 @@ aws iam create-open-id-connect-provider \
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::177542564244:oidc-provider/token.actions.githubusercontent.com"
+        "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
