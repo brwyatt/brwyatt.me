@@ -32,7 +32,7 @@ const betaRedirectConfig: RedirectConfig = {
       domainName: 'beta.brwyatt.net',
       hostedZoneId: 'Z22I3V5KI0TD1U',
       hostedZoneName: 'brwyatt.net',
-      additionalDomains: ['www.beta.brwyatt.net'],
+      additionalDomains: ['www.beta.brwyatt.net', 'mta-sts.beta.brwyatt.net'],
     },
     {
       domainName: 'beta.brwyatt.com',
