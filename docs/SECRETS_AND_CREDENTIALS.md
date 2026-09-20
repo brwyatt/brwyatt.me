@@ -45,13 +45,8 @@ aws iam create-open-id-connect-provider \
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
-          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
-        },
-        "StringLike": {
-          "token.actions.githubusercontent.com:sub": [
-            "repo:brwyatt/brwyatt.me:environment:beta",
-            "repo:brwyatt/brwyatt.me:ref:refs/heads/main"
-          ]
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub": "repo:brwyatt@440042/brwyatt.me@1377742708:environment:beta"
         }
       }
     }
@@ -73,10 +68,8 @@ aws iam create-open-id-connect-provider \
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
-          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
-        },
-        "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:brwyatt/brwyatt.me:environment:production"
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub": "repo:brwyatt@440042/brwyatt.me@1377742708:environment:production"
         }
       }
     }
