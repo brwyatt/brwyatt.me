@@ -1,16 +1,16 @@
 import React from 'react';
-import { Mail, Key, Globe, Github, Linkedin, Gamepad2 } from 'lucide-react';
+import { Mail, Key, Globe, Gamepad2 } from 'lucide-react';
 import { SITE_CONFIG, SOCIAL_LINKS } from '../data/site';
 import { InfoCard } from '../components/InfoCard';
-import { BlueskyIcon } from '../components/Footer';
+import { BlueskyIcon, GithubIcon, LinkedinIcon } from '../components/Footer';
 
 export const Contact: React.FC = () => {
   const getSocialIcon = (name: string) => {
     switch (name.toLowerCase()) {
       case 'github':
-        return <Github size={24} color="var(--accent)" />;
+        return <GithubIcon size={24} color="var(--accent)" />;
       case 'linkedin':
-        return <Linkedin size={24} color="var(--accent)" />;
+        return <LinkedinIcon size={24} color="var(--accent)" />;
       case 'bluesky':
         return <BlueskyIcon size={24} />;
       case 'steam':

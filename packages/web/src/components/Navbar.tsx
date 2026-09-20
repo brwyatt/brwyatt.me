@@ -17,7 +17,9 @@ export const Navbar: React.FC = () => {
               <li key={link.path}>
                 <NavLink
                   to={link.path}
-                  className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+                  className={({ isActive }: { isActive: boolean }) =>
+                    isActive ? 'nav-link active' : 'nav-link'
+                  }
                   end={link.path === '/'}
                 >
                   {link.label}
