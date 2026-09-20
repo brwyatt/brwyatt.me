@@ -21,7 +21,18 @@ export const Projects: React.FC = () => {
   };
 
   useEffect(() => {
-    loadData();
+    let ignore = false;
+    fetchGithubProjects('brwyatt').then((result) => {
+      if (!ignore) {
+        setProjects(result.projects);
+        setIsCached(result.isCached);
+        setError(result.error);
+        setIsLoading(false);
+      }
+    });
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   return (
