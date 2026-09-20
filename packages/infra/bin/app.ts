@@ -84,7 +84,7 @@ const prodRedirectConfig: RedirectConfig = {
   ],
 };
 
-new RedirectStack(app, 'BrwyattLegacyRedirectStack', {
+new RedirectStack(app, 'BrwyattMe-Prod-Redirects', {
   config: prodRedirectConfig,
   originBucket: prodStack.siteBucket,
   env: { account: prodRedirectConfig.account, region: awsRegion },

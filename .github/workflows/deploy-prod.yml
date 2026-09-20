@@ -42,7 +42,7 @@ jobs:
 
       - name: Deploy CDK Production & Redirect Stacks
         run: |
-          npx cdk deploy BrwyattMe-Prod BrwyattLegacyRedirectStack --require-approval never
+          npx cdk deploy BrwyattMe-Prod BrwyattMe-Prod-Redirects --require-approval never
         working-directory: packages/infra
 
       - name: Sync Static Assets to Production S3
