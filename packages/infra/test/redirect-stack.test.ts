@@ -16,7 +16,11 @@ describe('RedirectStack', () => {
     targetDomain: 'https://brwyatt.me',
     account: '123456789012',
     domains: [
-      { domainName: 'brwyatt.net', hostedZoneId: 'Z22I3V5KI0TD1U' },
+      {
+        domainName: 'brwyatt.net',
+        hostedZoneId: 'Z22I3V5KI0TD1U',
+        additionalDomains: ['mta-sts.brwyatt.net'],
+      },
       { domainName: 'brwyatt.com', hostedZoneId: 'ZDRNDVJ8GECH8' },
     ],
   };

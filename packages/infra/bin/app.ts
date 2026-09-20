@@ -18,9 +18,36 @@ const betaConfig: PortfolioConfig = {
   account: awsAccount,
 };
 
-new PortfolioStack(app, 'BrwyattMe-Beta', betaConfig, {
+const betaStack = new PortfolioStack(app, 'BrwyattMe-Beta', betaConfig, {
   env: { account: betaConfig.account, region: awsRegion },
   description: 'Beta stack for brwyatt.me',
+});
+
+// Beta Domain Redirector Stack (.net and .com -> https://beta.brwyatt.me)
+const betaRedirectConfig: RedirectConfig = {
+  targetDomain: 'https://beta.brwyatt.me',
+  account: awsAccount,
+  domains: [
+    {
+      domainName: 'beta.brwyatt.net',
+      hostedZoneId: 'Z22I3V5KI0TD1U',
+      hostedZoneName: 'brwyatt.net',
+      additionalDomains: ['www.beta.brwyatt.net'],
+    },
+    {
+      domainName: 'beta.brwyatt.com',
+      hostedZoneId: 'ZDRNDVJ8GECH8',
+      hostedZoneName: 'brwyatt.com',
+      additionalDomains: ['www.beta.brwyatt.com'],
+    },
+  ],
+};
+
+new RedirectStack(app, 'BrwyattMe-Beta-Redirects', {
+  config: betaRedirectConfig,
+  originBucket: betaStack.siteBucket,
+  env: { account: betaRedirectConfig.account, region: awsRegion },
+  description: 'Redirects beta.brwyatt.net and beta.brwyatt.com to https://beta.brwyatt.me',
 });
 
 // Production Stack
@@ -37,26 +64,30 @@ const prodStack = new PortfolioStack(app, 'BrwyattMe-Prod', prodConfig, {
   description: 'Production portfolio stack for brwyatt.me',
 });
 
-// Legacy Domain Redirector Stack (.net and .com -> https://brwyatt.me)
-const redirectConfig: RedirectConfig = {
+// Production Legacy Domain Redirector Stack (.net and .com -> https://brwyatt.me)
+const prodRedirectConfig: RedirectConfig = {
   targetDomain: 'https://brwyatt.me',
   account: awsAccount,
   domains: [
     {
       domainName: 'brwyatt.net',
       hostedZoneId: 'Z22I3V5KI0TD1U',
+      hostedZoneName: 'brwyatt.net',
+      additionalDomains: ['www.brwyatt.net', 'mta-sts.brwyatt.net'],
     },
     {
       domainName: 'brwyatt.com',
       hostedZoneId: 'ZDRNDVJ8GECH8',
+      hostedZoneName: 'brwyatt.com',
+      additionalDomains: ['www.brwyatt.com'],
     },
   ],
 };
 
 new RedirectStack(app, 'BrwyattLegacyRedirectStack', {
-  config: redirectConfig,
+  config: prodRedirectConfig,
   originBucket: prodStack.siteBucket,
-  env: { account: redirectConfig.account, region: awsRegion },
+  env: { account: prodRedirectConfig.account, region: awsRegion },
   description: 'Redirects brwyatt.net and brwyatt.com to https://brwyatt.me',
 });
 

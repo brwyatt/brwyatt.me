@@ -11,6 +11,8 @@ export interface PortfolioConfig {
 export interface RedirectDomain {
   domainName: string;
   hostedZoneId: string;
+  hostedZoneName?: string;
+  additionalDomains?: string[];
 }
 
 export interface RedirectConfig {

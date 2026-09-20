@@ -43,7 +43,7 @@ jobs:
           audience: sts.amazonaws.com
 
       - name: Deploy CDK Beta Stack
-        run: npx cdk deploy BrwyattMe-Beta --require-approval never
+        run: npx cdk deploy BrwyattMe-Beta BrwyattMe-Beta-Redirects --require-approval never
         working-directory: packages/infra
 
       - name: Sync Static Assets to S3

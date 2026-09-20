@@ -72,9 +72,9 @@ function handler(event) {
       },
     );
 
-    // 3. Dedicated Origin Access Control
+    // 3. Dedicated Origin Access Control (uniquely named per stack)
     const oac = new cloudfront.S3OriginAccessControl(this, 'RedirectOAC', {
-      originAccessControlName: 'BrwyattRedirectOAC',
+      originAccessControlName: `${id}-RedirectOAC`,
       signing: cloudfront.Signing.SIGV4_ALWAYS,
     });
 
@@ -83,27 +83,29 @@ function handler(event) {
     });
 
     for (const domain of config.domains) {
-      const zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${domain.domainName}`, {
+      const cleanDomainId = domain.domainName.replace(/\./g, '-');
+      const hostedZoneName = domain.hostedZoneName ?? domain.domainName;
+
+      const zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${cleanDomainId}`, {
         hostedZoneId: domain.hostedZoneId,
-        zoneName: domain.domainName,
+        zoneName: hostedZoneName,
       });
 
-      // Special subdomains like mta-sts.brwyatt.net
-      const domainNames = [
-        domain.domainName,
-        `www.${domain.domainName}`,
-        ...(domain.domainName === 'brwyatt.net' ? ['mta-sts.brwyatt.net'] : []),
-      ];
+      // Include primary domain plus any additional/legacy subdomains
+      const allDomainNames = [domain.domainName, ...(domain.additionalDomains ?? [])];
 
       // Explicit ACM Certificate for this domain and aliases
-      const cert = new acm.Certificate(this, `Cert-${domain.domainName}`, {
+      const cert = new acm.Certificate(this, `Cert-${cleanDomainId}`, {
         domainName: domain.domainName,
-        subjectAlternativeNames: domainNames.filter((d) => d !== domain.domainName),
+        subjectAlternativeNames:
+          domain.additionalDomains && domain.additionalDomains.length > 0
+            ? domain.additionalDomains
+            : undefined,
         validation: acm.CertificateValidation.fromDns(zone),
       });
 
       // CloudFront distribution fronting the shared S3 Origin with Selective Redirect Function
-      const dist = new cloudfront.Distribution(this, `Dist-${domain.domainName}`, {
+      const dist = new cloudfront.Distribution(this, `Dist-${cleanDomainId}`, {
         defaultBehavior: {
           origin: s3Origin,
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -116,48 +118,24 @@ function handler(event) {
           responseHeadersPolicy: wellKnownResponseHeaders,
           cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         },
-        domainNames,
+        domainNames: allDomainNames,
         certificate: cert,
         minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
       });
 
-      // Apex A & AAAA
-      new route53.ARecord(this, `ARecord-${domain.domainName}`, {
-        zone,
-        recordName: domain.domainName,
-        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
-      });
+      // A & AAAA alias records for all domains
+      for (const name of allDomainNames) {
+        const cleanRecordId = name.replace(/\./g, '-');
 
-      new route53.AaaaRecord(this, `AaaaRecord-${domain.domainName}`, {
-        zone,
-        recordName: domain.domainName,
-        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
-      });
-
-      // WWW A & AAAA
-      new route53.ARecord(this, `WwwARecord-${domain.domainName}`, {
-        zone,
-        recordName: `www.${domain.domainName}`,
-        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
-      });
-
-      new route53.AaaaRecord(this, `WwwAaaaRecord-${domain.domainName}`, {
-        zone,
-        recordName: `www.${domain.domainName}`,
-        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
-      });
-
-      // mta-sts A & AAAA records (for brwyatt.net)
-      if (domain.domainName === 'brwyatt.net') {
-        new route53.ARecord(this, 'MtaStsARecord', {
+        new route53.ARecord(this, `ARecord-${cleanRecordId}`, {
           zone,
-          recordName: 'mta-sts.brwyatt.net',
+          recordName: name,
           target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
         });
 
-        new route53.AaaaRecord(this, 'MtaStsAaaaRecord', {
+        new route53.AaaaRecord(this, `AaaaRecord-${cleanRecordId}`, {
           zone,
-          recordName: 'mta-sts.brwyatt.net',
+          recordName: name,
           target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
         });
       }
