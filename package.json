@@ -18,9 +18,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,yaml,yml}\""
   },
   "devDependencies": {
-    "prettier": "^3.2.5"
-  },
-  "overrides": {
+    "prettier": "^3.2.5",
     "vite": "^6.4.3"
   }
 }
