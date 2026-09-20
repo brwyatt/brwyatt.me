@@ -3,18 +3,25 @@
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: #1e293b;
-  --bg-card-hover: #273549;
-  --border-color: #334155;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --accent: #38bdf8;
-  --accent-hover: #0ea5e9;
-  --accent-glow: rgba(56, 189, 248, 0.15);
-  --success: #34d399;
+  /* The Fiber Optic Vibe (Tech Calm) */
+  --coat-navy: #1F3A52;
+  --steel-blue: #4682B4;
+  --muted-grey: #9BB6C9;
+  --bright-cyan: #34C3B1;
+  --glow-cyan: #4ee0ce;
+
+  --bg-primary: #101c2a;
+  --bg-secondary: #17283c;
+  --bg-card: #1F3A52;
+  --bg-card-hover: #264663;
+  --border-color: #2b4d6e;
+  --text-primary: #f0f7fb;
+  --text-secondary: #9BB6C9;
+  --text-muted: #66889f;
+  --accent: #34C3B1;
+  --accent-hover: #4ee0ce;
+  --accent-glow: rgba(52, 195, 177, 0.22);
+  --success: #34C3B1;
   --warning: #fbbf24;
   --max-width: 1024px;
 }
@@ -70,7 +77,7 @@ a:hover {
 /* Header & Nav */
 .site-header {
   border-bottom: 1px solid var(--border-color);
-  background-color: rgba(15, 23, 42, 0.85);
+  background-color: rgba(16, 28, 42, 0.88);
   backdrop-filter: blur(8px);
   position: sticky;
   top: 0;
@@ -205,8 +212,9 @@ a:hover {
 }
 
 .tag {
-  background-color: rgba(56, 189, 248, 0.1);
+  background-color: rgba(52, 195, 177, 0.12);
   color: var(--accent);
+  border: 1px solid rgba(52, 195, 177, 0.25);
   padding: 0.2rem 0.6rem;
   border-radius: 9999px;
   font-size: 0.75rem;

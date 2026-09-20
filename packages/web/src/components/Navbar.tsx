@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Terminal } from 'lucide-react';
+import { NetworkDAGIcon } from './NetworkDAGIcon';
 import { SITE_CONFIG, NAV_LINKS } from '../data/site';
 
 export const Navbar: React.FC = () => {
@@ -8,7 +8,7 @@ export const Navbar: React.FC = () => {
     <header className="site-header">
       <div className="header-inner">
         <NavLink to="/" className="site-title">
-          <Terminal size={20} color="var(--accent)" />
+          <NetworkDAGIcon size={24} />
           <span>{SITE_CONFIG.name}</span>
         </NavLink>
         <nav>
