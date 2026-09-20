@@ -15,47 +15,11 @@ permissions:
 jobs:
   deploy-prod:
     name: Deploy to Production
-    runs-on: ubuntu-latest
-    environment: production # Configured in GitHub with manual approval protection rules
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Web Application
-        run: npm run build -w @brwyatt/web
-
-      - name: Configure AWS Credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
-          aws-region: us-east-1
-          audience: sts.amazonaws.com
-
-      - name: Deploy CDK Production & Redirect Stacks
-        run: |
-          npx cdk deploy BrwyattMe-Prod BrwyattMe-Prod-Redirects --require-approval never
-        working-directory: packages/infra
-
-      - name: Sync Static Assets to Production S3
-        run: |
-          BUCKET_NAME="brwyatt-me-prod-site-assets"
-          aws s3 sync packages/web/dist "s3://${BUCKET_NAME}" --delete
-
-      - name: Invalidate CloudFront Cache
-        run: |
-          DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null && contains(Aliases.Items, 'brwyatt.me')].Id | [0]" --output text)
-          if [ -n "$DIST_ID" ] && [ "$DIST_ID" != "None" ]; then
-            aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
-          fi
-
-      - name: Run Production Smoke Tests
-        run: bash scripts/smoke-test.sh https://brwyatt.me
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      environment: production
+      stack_prefix: Prod
+      bucket_name: brwyatt-me-prod-site-assets
+      domain: brwyatt.me
+    secrets:
+      aws_role_arn: ${{ secrets.AWS_ROLE_ARN_PROD }}

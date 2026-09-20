@@ -16,47 +16,12 @@ permissions:
 jobs:
   deploy-beta:
     name: Deploy to Beta
-    runs-on: ubuntu-latest
-    environment: beta
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 24
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Web Application
-        run: npm run build -w @brwyatt/web
-
-      - name: Configure AWS Credentials via OIDC
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_BETA }}
-          aws-region: us-east-1
-          audience: sts.amazonaws.com
-
-      - name: Deploy CDK Beta Stack
-        run: npx cdk deploy BrwyattMe-Beta BrwyattMe-Beta-Redirects --require-approval never
-        working-directory: packages/infra
-
-      - name: Sync Static Assets to S3
-        run: |
-          BUCKET_NAME="brwyatt-me-beta-site-assets"
-          aws s3 sync packages/web/dist "s3://${BUCKET_NAME}" --delete
-
-      - name: Invalidate CloudFront Cache
-        run: |
-          DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null && contains(Aliases.Items, 'beta.brwyatt.me')].Id | [0]" --output text)
-          if [ -n "$DIST_ID" ] && [ "$DIST_ID" != "None" ]; then
-            aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
-          fi
-
-      - name: Run Beta Smoke Tests
-        run: bash scripts/smoke-test.sh https://beta.brwyatt.me
+    uses: ./.github/workflows/_deploy.yml
+    with:
+      environment: beta
+      stack_prefix: Beta
+      bucket_name: brwyatt-me-beta-site-assets
+      domain: beta.brwyatt.me
+    secrets:
+      aws_role_arn: ${{ secrets.AWS_ROLE_ARN_BETA }}
