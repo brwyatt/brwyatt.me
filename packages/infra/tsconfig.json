@@ -18,7 +18,8 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "skipLibCheck": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["node"]
   },
   "include": ["bin/**/*", "lib/**/*", "test/**/*"],
   "exclude": ["node_modules", "cdk.out", "dist"]

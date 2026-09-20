@@ -8,7 +8,7 @@ describe('fetchGithubProjects', () => {
   });
 
   it('returns fallback projects on network failure', async () => {
-    vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network error'));
+    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network error'));
 
     const result = await fetchGithubProjects('brwyatt');
     expect(result.projects).toEqual(FALLBACK_PROJECTS);
@@ -35,7 +35,7 @@ describe('fetchGithubProjects', () => {
       },
     ];
 
-    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
       ok: true,
       json: async () => mockApiResponse,
     } as Response);
@@ -69,7 +69,7 @@ describe('fetchGithubProjects', () => {
     localStorage.setItem('brwyatt_github_repos_v1', JSON.stringify(cachedProjects));
     localStorage.setItem('brwyatt_github_repos_timestamp', Date.now().toString());
 
-    const fetchSpy = vi.spyOn(global, 'fetch');
+    const fetchSpy = vi.spyOn(globalThis, 'fetch');
 
     const result = await fetchGithubProjects('brwyatt');
     expect(result.isCached).toBe(true);
