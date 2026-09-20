@@ -6,11 +6,7 @@ interface NetworkDAGIconProps {
   style?: React.CSSProperties;
 }
 
-export const NetworkDAGIcon: React.FC<NetworkDAGIconProps> = ({
-  size = 28,
-  className,
-  style,
-}) => {
+export const NetworkDAGIcon: React.FC<NetworkDAGIconProps> = ({ size = 28, className, style }) => {
   return (
     <svg
       width={size}

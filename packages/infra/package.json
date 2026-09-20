@@ -19,7 +19,7 @@
     "eslint": "^8.57.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.3",
-    "vitest": "^1.4.0"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
     "aws-cdk-lib": "^2.135.0",

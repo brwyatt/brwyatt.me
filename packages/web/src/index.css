@@ -4,24 +4,24 @@
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 
   /* The Fiber Optic Vibe (Tech Calm) */
-  --coat-navy: #1F3A52;
-  --steel-blue: #4682B4;
-  --muted-grey: #9BB6C9;
-  --bright-cyan: #34C3B1;
+  --coat-navy: #1f3a52;
+  --steel-blue: #4682b4;
+  --muted-grey: #9bb6c9;
+  --bright-cyan: #34c3b1;
   --glow-cyan: #4ee0ce;
 
   --bg-primary: #101c2a;
   --bg-secondary: #17283c;
-  --bg-card: #1F3A52;
+  --bg-card: #1f3a52;
   --bg-card-hover: #264663;
   --border-color: #2b4d6e;
   --text-primary: #f0f7fb;
-  --text-secondary: #9BB6C9;
+  --text-secondary: #9bb6c9;
   --text-muted: #66889f;
-  --accent: #34C3B1;
+  --accent: #34c3b1;
   --accent-hover: #4ee0ce;
   --accent-glow: rgba(52, 195, 177, 0.22);
-  --success: #34C3B1;
+  --success: #34c3b1;
   --warning: #fbbf24;
   --max-width: 1024px;
 }
