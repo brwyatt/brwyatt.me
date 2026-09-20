@@ -10,6 +10,8 @@ out/
 cdk.out/
 *.tsbuildinfo
 packages/infra/dist/
+packages/web/vite.config.d.ts
+packages/web/vite.config.js
 
 # Local Environment, Temporary Context & Secrets
 .env
