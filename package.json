@@ -19,5 +19,8 @@
   },
   "devDependencies": {
     "prettier": "^3.2.5"
+  },
+  "overrides": {
+    "vite": "^6.4.3"
   }
 }
