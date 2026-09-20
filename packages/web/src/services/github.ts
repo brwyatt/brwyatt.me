@@ -1,4 +1,4 @@
-import { GithubRepo } from './github.types';
+import { GithubRepo, RawGithubRepo } from './github.types';
 
 const CACHE_KEY = 'brwyatt_github_repos_v1';
 const CACHE_TIMESTAMP_KEY = 'brwyatt_github_repos_timestamp';
@@ -106,18 +106,18 @@ export async function fetchGithubProjects(username: string = 'brwyatt'): Promise
       throw new Error(`GitHub API returned status ${response.status}`);
     }
 
-    const rawData = await response.json();
+    const rawData = (await response.json()) as RawGithubRepo[];
 
     const normalized: GithubRepo[] = rawData
-      .filter((repo: any) => !repo.fork && !repo.archived)
-      .map((repo: any) => ({
+      .filter((repo: RawGithubRepo) => !repo.fork && !repo.archived)
+      .map((repo: RawGithubRepo) => ({
         id: repo.id,
         name: repo.name,
         fullName: repo.full_name,
         description: repo.description,
         htmlUrl: repo.html_url,
-        homepage: repo.homepage || null,
-        language: repo.language,
+        homepage: repo.homepage ?? null,
+        language: repo.language ?? null,
         stargazersCount: repo.stargazers_count,
         forksCount: repo.forks_count,
         isFork: repo.fork,
@@ -139,7 +139,10 @@ export async function fetchGithubProjects(username: string = 'brwyatt'): Promise
       isCached: false,
       error: null,
     };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error ? err.message : 'Error fetching fresh data from GitHub.';
+
     // Return stale cache if available, or fallback
     try {
       const cachedData = localStorage.getItem(CACHE_KEY);
@@ -147,7 +150,7 @@ export async function fetchGithubProjects(username: string = 'brwyatt'): Promise
         return {
           projects: JSON.parse(cachedData),
           isCached: true,
-          error: err.message || 'Error fetching fresh data from GitHub.',
+          error: errorMessage,
         };
       }
     } catch {
@@ -157,7 +160,7 @@ export async function fetchGithubProjects(username: string = 'brwyatt'): Promise
     return {
       projects: FALLBACK_PROJECTS,
       isCached: false,
-      error: err.message || 'Offline fallback mode.',
+      error: errorMessage || 'Offline fallback mode.',
     };
   }
 }

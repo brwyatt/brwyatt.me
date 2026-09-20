@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'vitest';
 import { RedirectStack } from '../lib/redirect-stack';
 import { RedirectConfig } from '../lib/types';
 
