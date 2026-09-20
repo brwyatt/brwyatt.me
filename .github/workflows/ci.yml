@@ -30,6 +30,9 @@ jobs:
       - name: Check code formatting
         run: npm run format:check
 
+      - name: Lint workspaces
+        run: npm run lint
+
       - name: Typecheck workspaces
         run: npm run typecheck
 
