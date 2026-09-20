@@ -6,7 +6,7 @@ import { Navbar } from '../Navbar';
 describe('Navbar', () => {
   it('renders navigation links', () => {
     render(
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Navbar />
       </BrowserRouter>,
     );
