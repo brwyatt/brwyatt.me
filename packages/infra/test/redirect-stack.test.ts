@@ -59,6 +59,29 @@ describe('RedirectStack', () => {
     });
   });
 
+  it('provisions a response headers policy with CORS and HSTS for pass-through requests', () => {
+    template.hasResourceProperties('AWS::CloudFront::ResponseHeadersPolicy', {
+      ResponseHeadersPolicyConfig: {
+        SecurityHeadersConfig: {
+          StrictTransportSecurity: {
+            AccessControlMaxAgeSec: 31536000,
+            IncludeSubdomains: true,
+            Override: true,
+            Preload: true,
+          },
+          ContentTypeOptions: {
+            Override: true,
+          },
+        },
+        CorsConfig: {
+          AccessControlAllowOrigins: {
+            Items: ['*'],
+          },
+        },
+      },
+    });
+  });
+
   it('creates Route 53 alias records for redirect domains', () => {
     template.hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'www.brwyatt.me.',

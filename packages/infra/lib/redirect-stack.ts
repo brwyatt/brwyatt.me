@@ -50,6 +50,12 @@ export class RedirectStack extends cdk.Stack {
           originOverride: true,
         },
         securityHeadersBehavior: {
+          strictTransportSecurity: {
+            accessControlMaxAge: cdk.Duration.days(365),
+            includeSubdomains: true,
+            preload: true,
+            override: true,
+          },
           contentTypeOptions: { override: true },
         },
       },
