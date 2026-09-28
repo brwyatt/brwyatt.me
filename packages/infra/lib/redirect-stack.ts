@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -26,22 +27,14 @@ export class RedirectStack extends cdk.Stack {
       bucketRegionalDomainName: originBucketRegionalDomainName,
     });
 
-    // 1. CloudFront KeyValueStore to inject targetDomain cleanly without code interpolation
-    const kvs = new cloudfront.KeyValueStore(this, 'RedirectKeyValueStore', {
-      source: cloudfront.ImportSource.fromInline(
-        JSON.stringify({
-          data: [{ key: 'targetDomain', value: config.targetDomain }],
-        }),
-      ),
-    });
+    // 1. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
+    const templatePath = path.join(__dirname, '../functions/redirect.js');
+    const templateCode = fs.readFileSync(templatePath, 'utf8');
+    const functionCode = templateCode.replace('__TARGET_DOMAIN__', config.targetDomain);
 
-    // 2. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
     const redirectFunction = new cloudfront.Function(this, 'SelectiveRedirectFunction', {
-      code: cloudfront.FunctionCode.fromFile({
-        filePath: path.join(__dirname, '../functions/redirect.js'),
-      }),
+      code: cloudfront.FunctionCode.fromInline(functionCode),
       runtime: cloudfront.FunctionRuntime.JS_2_0,
-      keyValueStore: kvs,
     });
 
     // 3. CORS & Security Response Header Policy for .well-known / WKD

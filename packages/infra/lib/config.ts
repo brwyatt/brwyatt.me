@@ -33,6 +33,10 @@ export function getStageConfig(stage: Stage): StageConfig {
     redirectTarget: `https://${domainName}`,
     redirectDomains: [
       {
+        domainName: `www.${domainName}`,
+        hostedZone: HOSTED_ZONES.me,
+      },
+      {
         domainName: `${prefix}${HOSTED_ZONES.net.zoneName}`,
         hostedZone: HOSTED_ZONES.net,
         additionalDomains: [

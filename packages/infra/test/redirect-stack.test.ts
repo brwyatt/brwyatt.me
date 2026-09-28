@@ -16,6 +16,7 @@ describe('RedirectStack', () => {
   const config: RedirectConfig = {
     targetDomain: 'https://brwyatt.me',
     domains: [
+      { domainName: 'www.brwyatt.me', hostedZone: HOSTED_ZONES.me },
       {
         domainName: 'brwyatt.net',
         hostedZone: HOSTED_ZONES.net,
@@ -33,24 +34,12 @@ describe('RedirectStack', () => {
   });
   const template = Template.fromStack(stack);
 
-  it('provisions a CloudFront KeyValueStore with targetDomain', () => {
-    template.hasResourceProperties('AWS::CloudFront::KeyValueStore', {
-      ImportSource: {
-        SourceType: 'S3',
-      },
-    });
-  });
-
-  it('provisions a CloudFront function associated with the KeyValueStore using JS 2.0', () => {
+  it('provisions a CloudFront function for selective redirect using JS 2.0', () => {
     template.hasResourceProperties('AWS::CloudFront::Function', {
       FunctionConfig: {
         Runtime: 'cloudfront-js-2.0',
-        KeyValueStoreAssociations: Match.arrayWith([
-          Match.objectLike({
-            KeyValueStoreARN: Match.anyValue(),
-          }),
-        ]),
       },
+      FunctionCode: Match.stringLikeRegexp('https://brwyatt.me'),
     });
   });
 
@@ -60,12 +49,21 @@ describe('RedirectStack', () => {
 
     template.hasResourceProperties('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Aliases: Match.arrayWith(['brwyatt.net', 'mta-sts.brwyatt.net', 'brwyatt.com']),
+        Aliases: Match.arrayWith([
+          'www.brwyatt.me',
+          'brwyatt.net',
+          'mta-sts.brwyatt.net',
+          'brwyatt.com',
+        ]),
       },
     });
   });
 
   it('creates Route 53 alias records for redirect domains', () => {
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.brwyatt.me.',
+      Type: 'A',
+    });
     template.hasResourceProperties('AWS::Route53::RecordSet', {
       Name: 'brwyatt.net.',
       Type: 'A',
