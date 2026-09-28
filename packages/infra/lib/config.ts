@@ -18,13 +18,48 @@ export const HOSTED_ZONES: Record<'me' | 'net' | 'com', HostedZoneRef> = {
 
 export const ACTIVE_STAGES: Stage[] = ['beta', 'prod'];
 
+export function validateStageConfig(config: StageConfig): void {
+  const websiteDomains = new Set<string>();
+  const redirectDomains = new Set<string>();
+
+  const allWebsite = [config.domainName, ...(config.aliases ?? [])];
+  for (const domain of allWebsite) {
+    if (websiteDomains.has(domain)) {
+      throw new Error(`Duplicate domain in WebsiteConfig for stage '${config.stage}': ${domain}`);
+    }
+    websiteDomains.add(domain);
+  }
+
+  for (const rd of config.redirectDomains) {
+    const allRd = [rd.domainName, ...(rd.additionalDomains ?? [])];
+    for (const domain of allRd) {
+      if (redirectDomains.has(domain)) {
+        throw new Error(
+          `Duplicate domain in RedirectConfig for stage '${config.stage}': ${domain}`,
+        );
+      }
+      redirectDomains.add(domain);
+    }
+  }
+
+  for (const domain of websiteDomains) {
+    if (redirectDomains.has(domain)) {
+      throw new Error(
+        `Domain collision detected for stage '${config.stage}': '${domain}' is configured in both WebsiteStack and RedirectStack`,
+      );
+    }
+  }
+}
+
 export function getStageConfig(stage: Stage): StageConfig {
   const prefix = stage === 'prod' ? '' : `${stage}.`;
   const domainName = `${prefix}${HOSTED_ZONES.me.zoneName}`;
+  const bucketName = `brwyatt-me-${stage}-site-assets`;
 
-  return {
+  const config: StageConfig = {
     stage,
     domainName,
+    bucketName,
     hostedZone: HOSTED_ZONES.me,
     env: {
       account: STAGE_ACCOUNTS[stage] || AWS_DEFAULTS.account,
@@ -51,4 +86,7 @@ export function getStageConfig(stage: Stage): StageConfig {
       },
     ],
   };
+
+  validateStageConfig(config);
+  return config;
 }

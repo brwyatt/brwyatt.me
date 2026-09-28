@@ -10,6 +10,7 @@ describe('WebsiteStack', () => {
   const config: WebsiteConfig = {
     stage: 'beta',
     domainName: 'beta.brwyatt.me',
+    bucketName: 'brwyatt-me-beta-site-assets',
     aliases: ['www.beta.brwyatt.me'],
     hostedZone: HOSTED_ZONES.me,
   };

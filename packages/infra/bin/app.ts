@@ -15,16 +15,17 @@ for (const stage of ACTIVE_STAGES) {
     description: `${capitalized} website stack for ${config.domainName}`,
   });
 
-  new RedirectStack(app, `${stackId}-Redirects`, {
+  const redirectStack = new RedirectStack(app, `${stackId}-Redirects`, {
     config: {
       targetDomain: config.redirectTarget,
       domains: config.redirectDomains,
     },
-    originBucketName: websiteStack.siteBucket.bucketName,
-    originBucketRegionalDomainName: websiteStack.siteBucket.bucketRegionalDomainName,
+    originBucketName: config.bucketName,
     env: config.env,
     description: `Redirects legacy domains to ${config.redirectTarget}`,
   });
+
+  redirectStack.addStackDependency(websiteStack);
 }
 
 app.synth();

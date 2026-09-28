@@ -28,8 +28,7 @@ describe('RedirectStack', () => {
 
   const stack = new RedirectStack(app, 'TestRedirectStack', {
     config,
-    originBucketName: testBucket.bucketName,
-    originBucketRegionalDomainName: testBucket.bucketRegionalDomainName,
+    originBucketName: 'test-site-assets',
     env: { account: '123456789012', region: 'us-east-1' },
   });
   const template = Template.fromStack(stack);
@@ -55,6 +54,29 @@ describe('RedirectStack', () => {
           'mta-sts.brwyatt.net',
           'brwyatt.com',
         ]),
+      },
+    });
+  });
+
+  it('provisions a response headers policy with CORS and HSTS for pass-through requests', () => {
+    template.hasResourceProperties('AWS::CloudFront::ResponseHeadersPolicy', {
+      ResponseHeadersPolicyConfig: {
+        SecurityHeadersConfig: {
+          StrictTransportSecurity: {
+            AccessControlMaxAgeSec: 31536000,
+            IncludeSubdomains: true,
+            Override: true,
+            Preload: true,
+          },
+          ContentTypeOptions: {
+            Override: true,
+          },
+        },
+        CorsConfig: {
+          AccessControlAllowOrigins: {
+            Items: ['*'],
+          },
+        },
       },
     });
   });

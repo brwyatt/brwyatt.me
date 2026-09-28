@@ -10,6 +10,7 @@ export interface HostedZoneRef {
 export interface WebsiteConfig {
   stage: Stage;
   domainName: string;
+  bucketName: string;
   aliases?: string[];
   hostedZone: HostedZoneRef;
 }
