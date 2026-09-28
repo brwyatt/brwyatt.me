@@ -1,3 +1,5 @@
+import * as cdk from 'aws-cdk-lib';
+
 export type Stage = 'beta' | 'gamma' | 'prod';
 
 export interface HostedZoneRef {
@@ -24,6 +26,7 @@ export interface RedirectConfig {
 }
 
 export interface StageConfig extends WebsiteConfig {
+  env: cdk.Environment;
   redirectTarget: string;
   redirectDomains: RedirectDomain[];
 }

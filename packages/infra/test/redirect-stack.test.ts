@@ -27,7 +27,8 @@ describe('RedirectStack', () => {
 
   const stack = new RedirectStack(app, 'TestRedirectStack', {
     config,
-    originBucket: testBucket,
+    originBucketName: testBucket.bucketName,
+    originBucketRegionalDomainName: testBucket.bucketRegionalDomainName,
     env: { account: '123456789012', region: 'us-east-1' },
   });
   const template = Template.fromStack(stack);

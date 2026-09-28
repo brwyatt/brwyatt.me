@@ -1,10 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { WebsiteStack } from '../lib/website-stack';
 import { RedirectStack } from '../lib/redirect-stack';
-import { ACTIVE_STAGES, AWS_DEFAULTS, getStageConfig } from '../lib/config';
+import { ACTIVE_STAGES, getStageConfig } from '../lib/config';
 
 const app = new cdk.App();
-const env = { account: AWS_DEFAULTS.account, region: AWS_DEFAULTS.region };
 
 for (const stage of ACTIVE_STAGES) {
   const config = getStageConfig(stage);
@@ -12,7 +11,7 @@ for (const stage of ACTIVE_STAGES) {
   const stackId = `BrwyattMe-${capitalized}`;
 
   const websiteStack = new WebsiteStack(app, stackId, config, {
-    env,
+    env: config.env,
     description: `${capitalized} website stack for ${config.domainName}`,
   });
 
@@ -21,8 +20,9 @@ for (const stage of ACTIVE_STAGES) {
       targetDomain: config.redirectTarget,
       domains: config.redirectDomains,
     },
-    originBucket: websiteStack.siteBucket,
-    env,
+    originBucketName: websiteStack.siteBucket.bucketName,
+    originBucketRegionalDomainName: websiteStack.siteBucket.bucketRegionalDomainName,
+    env: config.env,
     description: `Redirects legacy domains to ${config.redirectTarget}`,
   });
 }

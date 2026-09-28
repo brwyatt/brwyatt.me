@@ -10,18 +10,19 @@ import { RedirectConfig } from './types';
 
 export interface RedirectStackProps extends cdk.StackProps {
   config: RedirectConfig;
-  originBucket: s3.IBucket;
+  originBucketName: string;
+  originBucketRegionalDomainName: string;
 }
 
 export class RedirectStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: RedirectStackProps) {
     super(scope, id, props);
-    const { config, originBucket } = props;
+    const { config, originBucketName, originBucketRegionalDomainName } = props;
 
-    // Import the bucket by attributes within this stack to prevent CDK cross-stack cycle
+    // Import the bucket by primitive attributes to decouple from the origin stack instance
     const importedBucket = s3.Bucket.fromBucketAttributes(this, 'ImportedOriginBucket', {
-      bucketName: originBucket.bucketName,
-      bucketRegionalDomainName: originBucket.bucketRegionalDomainName,
+      bucketName: originBucketName,
+      bucketRegionalDomainName: originBucketRegionalDomainName,
     });
 
     // 1. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
