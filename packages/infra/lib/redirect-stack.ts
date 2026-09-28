@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
@@ -6,7 +7,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { Construct } from 'constructs';
-import { RedirectConfig } from './types';
+import { HostedZoneRef, RedirectConfig } from './types';
 
 export interface RedirectStackProps extends cdk.StackProps {
   config: RedirectConfig;
@@ -25,37 +26,25 @@ export class RedirectStack extends cdk.Stack {
       bucketRegionalDomainName: originBucketRegionalDomainName,
     });
 
-    // 1. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
-    const redirectFunction = new cloudfront.Function(this, 'SelectiveRedirectFunction', {
-      code: cloudfront.FunctionCode.fromInline(`
-function handler(event) {
-  var request = event.request;
-  var uri = request.uri;
-
-  // Pass-through paths required by email, federation, and identity protocols
-  if (
-    uri.startsWith('/.well-known/') ||
-    uri === '/keybase.txt' ||
-    uri === '/robots.txt'
-  ) {
-    return request;
-  }
-
-  // All other paths 301 redirect to target domain
-  var redirectUrl = '${config.targetDomain}' + uri;
-  return {
-    statusCode: 301,
-    statusDescription: 'Moved Permanently',
-    headers: {
-      'location': { value: redirectUrl },
-      'cache-control': { value: 'public, max-age=86400' }
-    }
-  };
-}
-      `),
+    // 1. CloudFront KeyValueStore to inject targetDomain cleanly without code interpolation
+    const kvs = new cloudfront.KeyValueStore(this, 'RedirectKeyValueStore', {
+      source: cloudfront.ImportSource.fromInline(
+        JSON.stringify({
+          data: [{ key: 'targetDomain', value: config.targetDomain }],
+        }),
+      ),
     });
 
-    // 2. CORS & Security Response Header Policy for .well-known / WKD
+    // 2. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
+    const redirectFunction = new cloudfront.Function(this, 'SelectiveRedirectFunction', {
+      code: cloudfront.FunctionCode.fromFile({
+        filePath: path.join(__dirname, '../functions/redirect.js'),
+      }),
+      runtime: cloudfront.FunctionRuntime.JS_2_0,
+      keyValueStore: kvs,
+    });
+
+    // 3. CORS & Security Response Header Policy for .well-known / WKD
     const wellKnownResponseHeaders = new cloudfront.ResponseHeadersPolicy(
       this,
       'WellKnownHeaders',
@@ -73,7 +62,7 @@ function handler(event) {
       },
     );
 
-    // 3. Dedicated Origin Access Control (uniquely named per stack)
+    // 4. Dedicated Origin Access Control (uniquely named per stack)
     const oac = new cloudfront.S3OriginAccessControl(this, 'RedirectOAC', {
       originAccessControlName: `${id}-RedirectOAC`,
       signing: cloudfront.Signing.SIGV4_ALWAYS,
@@ -83,63 +72,84 @@ function handler(event) {
       originAccessControl: oac,
     });
 
-    for (const domain of config.domains) {
-      const cleanDomainId = domain.domainName.replace(/\./g, '-');
-      const hostedZoneName = domain.hostedZone.zoneName;
-
-      const zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${cleanDomainId}`, {
-        hostedZoneId: domain.hostedZone.hostedZoneId,
-        zoneName: hostedZoneName,
-      });
-
-      // Include primary domain plus any additional/legacy subdomains
-      const allDomainNames = [domain.domainName, ...(domain.additionalDomains ?? [])];
-
-      // Explicit ACM Certificate for this domain and aliases
-      const cert = new acm.Certificate(this, `Cert-${cleanDomainId}`, {
-        domainName: domain.domainName,
-        subjectAlternativeNames:
-          domain.additionalDomains && domain.additionalDomains.length > 0
-            ? domain.additionalDomains
-            : undefined,
-        validation: acm.CertificateValidation.fromDns(zone),
-      });
-
-      // CloudFront distribution fronting the shared S3 Origin with Selective Redirect Function
-      const dist = new cloudfront.Distribution(this, `Dist-${cleanDomainId}`, {
-        defaultBehavior: {
-          origin: s3Origin,
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          functionAssociations: [
-            {
-              function: redirectFunction,
-              eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
-            },
-          ],
-          responseHeadersPolicy: wellKnownResponseHeaders,
-          cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
-        },
-        domainNames: allDomainNames,
-        certificate: cert,
-        minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
-      });
-
-      // A & AAAA alias records for all domains
-      for (const name of allDomainNames) {
-        const cleanRecordId = name.replace(/\./g, '-');
-
-        new route53.ARecord(this, `ARecord-${cleanRecordId}`, {
-          zone,
-          recordName: name,
-          target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
+    // 5. Consolidate all redirect domains across zones
+    const zoneCache = new Map<string, route53.IHostedZone>();
+    const getOrCreateZone = (ref: HostedZoneRef) => {
+      let zone = zoneCache.get(ref.hostedZoneId);
+      if (!zone) {
+        const cleanZoneId = ref.zoneName.replace(/\./g, '-');
+        zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${cleanZoneId}`, {
+          hostedZoneId: ref.hostedZoneId,
+          zoneName: ref.zoneName,
         });
-
-        new route53.AaaaRecord(this, `AaaaRecord-${cleanRecordId}`, {
-          zone,
-          recordName: name,
-          target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(dist)),
-        });
+        zoneCache.set(ref.hostedZoneId, zone);
       }
+      return zone;
+    };
+
+    const allDomainNames: string[] = [];
+    const hostedZoneMap: Record<string, route53.IHostedZone> = {};
+    const domainRecordTargets: { domainName: string; zone: route53.IHostedZone }[] = [];
+
+    for (const domain of config.domains) {
+      const zone = getOrCreateZone(domain.hostedZone);
+      const names = [domain.domainName, ...(domain.additionalDomains ?? [])];
+      for (const name of names) {
+        allDomainNames.push(name);
+        hostedZoneMap[name] = zone;
+        domainRecordTargets.push({ domainName: name, zone });
+      }
+    }
+
+    if (allDomainNames.length === 0) {
+      return;
+    }
+
+    const primaryDomain = allDomainNames[0];
+    const subjectAlternativeNames = allDomainNames.slice(1);
+
+    // 6. Unified Multi-Zone Certificate
+    const certificate = new acm.Certificate(this, 'RedirectCertificate', {
+      domainName: primaryDomain,
+      subjectAlternativeNames:
+        subjectAlternativeNames.length > 0 ? subjectAlternativeNames : undefined,
+      validation: acm.CertificateValidation.fromDnsMultiZone(hostedZoneMap),
+    });
+
+    // 7. Single Consolidated CloudFront Distribution
+    const distribution = new cloudfront.Distribution(this, 'RedirectDistribution', {
+      defaultBehavior: {
+        origin: s3Origin,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        functionAssociations: [
+          {
+            function: redirectFunction,
+            eventType: cloudfront.FunctionEventType.VIEWER_REQUEST,
+          },
+        ],
+        responseHeadersPolicy: wellKnownResponseHeaders,
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+      },
+      domainNames: allDomainNames,
+      certificate,
+      minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
+    });
+
+    // 8. Route 53 A & AAAA Alias Records for all redirect domains
+    for (const { domainName, zone } of domainRecordTargets) {
+      const cleanRecordId = domainName.replace(/\./g, '-');
+
+      new route53.ARecord(this, `ARecord-${cleanRecordId}`, {
+        zone,
+        recordName: domainName,
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      });
+
+      new route53.AaaaRecord(this, `AaaaRecord-${cleanRecordId}`, {
+        zone,
+        recordName: domainName,
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      });
     }
   }
 }
