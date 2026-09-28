@@ -8,11 +8,7 @@ async function handler(event) {
   const uri = request.uri;
 
   // Pass-through paths required by email, federation, and identity protocols
-  if (
-    uri.startsWith('/.well-known/') ||
-    uri === '/keybase.txt' ||
-    uri === '/robots.txt'
-  ) {
+  if (uri.startsWith('/.well-known/') || uri === '/keybase.txt' || uri === '/robots.txt') {
     return request;
   }
 
