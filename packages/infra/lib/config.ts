@@ -25,7 +25,6 @@ export function getStageConfig(stage: Stage): StageConfig {
   return {
     stage,
     domainName,
-    aliases: [`www.${domainName}`],
     hostedZone: HOSTED_ZONES.me,
     env: {
       account: STAGE_ACCOUNTS[stage] || AWS_DEFAULTS.account,
