@@ -10,18 +10,19 @@ import { RedirectConfig } from './types';
 
 export interface RedirectStackProps extends cdk.StackProps {
   config: RedirectConfig;
-  originBucket: s3.IBucket;
+  originBucketName: string;
+  originBucketRegionalDomainName: string;
 }
 
 export class RedirectStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: RedirectStackProps) {
     super(scope, id, props);
-    const { config, originBucket } = props;
+    const { config, originBucketName, originBucketRegionalDomainName } = props;
 
-    // Import the bucket by attributes within this stack to prevent CDK cross-stack cycle
+    // Import the bucket by primitive attributes to decouple from the origin stack instance
     const importedBucket = s3.Bucket.fromBucketAttributes(this, 'ImportedOriginBucket', {
-      bucketName: originBucket.bucketName,
-      bucketRegionalDomainName: originBucket.bucketRegionalDomainName,
+      bucketName: originBucketName,
+      bucketRegionalDomainName: originBucketRegionalDomainName,
     });
 
     // 1. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
@@ -40,7 +41,7 @@ function handler(event) {
     return request;
   }
 
-  // All other paths 301 redirect to https://brwyatt.me/
+  // All other paths 301 redirect to target domain
   var redirectUrl = '${config.targetDomain}' + uri;
   return {
     statusCode: 301,
@@ -84,10 +85,10 @@ function handler(event) {
 
     for (const domain of config.domains) {
       const cleanDomainId = domain.domainName.replace(/\./g, '-');
-      const hostedZoneName = domain.hostedZoneName ?? domain.domainName;
+      const hostedZoneName = domain.hostedZone.zoneName;
 
       const zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${cleanDomainId}`, {
-        hostedZoneId: domain.hostedZoneId,
+        hostedZoneId: domain.hostedZone.hostedZoneId,
         zoneName: hostedZoneName,
       });
 

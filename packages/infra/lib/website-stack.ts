@@ -6,13 +6,13 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { Construct } from 'constructs';
-import { PortfolioConfig } from './types';
+import { WebsiteConfig } from './types';
 
-export class PortfolioStack extends cdk.Stack {
+export class WebsiteStack extends cdk.Stack {
   public readonly siteBucket: s3.Bucket;
   public readonly distribution: cloudfront.Distribution;
 
-  constructor(scope: Construct, id: string, config: PortfolioConfig, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, config: WebsiteConfig, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // 1. Private S3 Origin Bucket (Encrypted, Block Public Access)
@@ -27,10 +27,8 @@ export class PortfolioStack extends cdk.Stack {
 
     // 2. Route 53 Hosted Zone lookup
     const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
-      hostedZoneId: config.hostedZoneId,
-      zoneName: config.domainName.includes('.')
-        ? config.domainName.split('.').slice(-2).join('.')
-        : config.domainName,
+      hostedZoneId: config.hostedZone.hostedZoneId,
+      zoneName: config.hostedZone.zoneName,
     });
 
     // 3. Explicit ACM Certificate (CloudFront requires us-east-1)
@@ -80,20 +78,12 @@ export class PortfolioStack extends cdk.Stack {
       domainNames,
       certificate,
       defaultRootObject: 'index.html',
-      errorResponses: [
-        {
-          httpStatus: 403,
-          responseHttpStatus: 200,
-          responsePagePath: '/index.html',
-          ttl: cdk.Duration.seconds(10),
-        },
-        {
-          httpStatus: 404,
-          responseHttpStatus: 200,
-          responsePagePath: '/index.html',
-          ttl: cdk.Duration.seconds(10),
-        },
-      ],
+      errorResponses: [403, 404].map((httpStatus) => ({
+        httpStatus,
+        responseHttpStatus: 200,
+        responsePagePath: '/index.html',
+        ttl: cdk.Duration.seconds(10),
+      })),
       minimumProtocolVersion: cloudfront.SecurityPolicyProtocol.TLS_V1_2_2021,
     });
 
