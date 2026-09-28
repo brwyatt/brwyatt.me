@@ -17,7 +17,7 @@ export class WebsiteStack extends cdk.Stack {
 
     // 1. Private S3 Origin Bucket (Encrypted, Block Public Access)
     this.siteBucket = new s3.Bucket(this, 'SiteBucket', {
-      bucketName: `brwyatt-me-${config.stage}-site-assets`,
+      bucketName: config.bucketName,
       encryption: s3.BucketEncryption.S3_MANAGED,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,

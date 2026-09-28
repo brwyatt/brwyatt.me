@@ -21,10 +21,12 @@ export const ACTIVE_STAGES: Stage[] = ['beta', 'prod'];
 export function getStageConfig(stage: Stage): StageConfig {
   const prefix = stage === 'prod' ? '' : `${stage}.`;
   const domainName = `${prefix}${HOSTED_ZONES.me.zoneName}`;
+  const bucketName = `brwyatt-me-${stage}-site-assets`;
 
   return {
     stage,
     domainName,
+    bucketName,
     hostedZone: HOSTED_ZONES.me,
     env: {
       account: STAGE_ACCOUNTS[stage] || AWS_DEFAULTS.account,
