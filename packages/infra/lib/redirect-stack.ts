@@ -13,19 +13,15 @@ import { HostedZoneRef, RedirectConfig } from './types';
 export interface RedirectStackProps extends cdk.StackProps {
   config: RedirectConfig;
   originBucketName: string;
-  originBucketRegionalDomainName: string;
 }
 
 export class RedirectStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: RedirectStackProps) {
     super(scope, id, props);
-    const { config, originBucketName, originBucketRegionalDomainName } = props;
+    const { config, originBucketName } = props;
 
-    // Import the bucket by primitive attributes to decouple from the origin stack instance
-    const importedBucket = s3.Bucket.fromBucketAttributes(this, 'ImportedOriginBucket', {
-      bucketName: originBucketName,
-      bucketRegionalDomainName: originBucketRegionalDomainName,
-    });
+    // Import the bucket by name to decouple from origin stack instance and avoid CloudFormation export coupling
+    const importedBucket = s3.Bucket.fromBucketName(this, 'ImportedOriginBucket', originBucketName);
 
     // 1. CloudFront Function: Selective 301 Redirect vs .well-known / keybase.txt Pass-Through
     const templatePath = path.join(__dirname, '../functions/redirect.js');
