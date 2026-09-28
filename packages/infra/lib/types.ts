@@ -1,22 +1,29 @@
 export type Stage = 'beta' | 'gamma' | 'prod';
 
-export interface PortfolioConfig {
+export interface HostedZoneRef {
+  zoneName: string;
+  hostedZoneId: string;
+}
+
+export interface WebsiteConfig {
   stage: Stage;
   domainName: string;
   aliases?: string[];
-  hostedZoneId: string;
-  account: string;
+  hostedZone: HostedZoneRef;
 }
 
 export interface RedirectDomain {
   domainName: string;
-  hostedZoneId: string;
-  hostedZoneName?: string;
+  hostedZone: HostedZoneRef;
   additionalDomains?: string[];
 }
 
 export interface RedirectConfig {
-  targetDomain: string; // e.g. "https://brwyatt.me"
+  targetDomain: string;
   domains: RedirectDomain[];
-  account: string;
+}
+
+export interface StageConfig extends WebsiteConfig {
+  redirectTarget: string;
+  redirectDomains: RedirectDomain[];
 }

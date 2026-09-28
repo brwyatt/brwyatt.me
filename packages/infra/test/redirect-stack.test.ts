@@ -4,6 +4,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { describe, it } from 'vitest';
 import { RedirectStack } from '../lib/redirect-stack';
 import { RedirectConfig } from '../lib/types';
+import { HOSTED_ZONES } from '../lib/config';
 
 describe('RedirectStack', () => {
   const app = new cdk.App();
@@ -14,14 +15,13 @@ describe('RedirectStack', () => {
 
   const config: RedirectConfig = {
     targetDomain: 'https://brwyatt.me',
-    account: '123456789012',
     domains: [
       {
         domainName: 'brwyatt.net',
-        hostedZoneId: 'Z22I3V5KI0TD1U',
+        hostedZone: HOSTED_ZONES.net,
         additionalDomains: ['mta-sts.brwyatt.net'],
       },
-      { domainName: 'brwyatt.com', hostedZoneId: 'ZDRNDVJ8GECH8' },
+      { domainName: 'brwyatt.com', hostedZone: HOSTED_ZONES.com },
     ],
   };
 

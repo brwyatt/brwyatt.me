@@ -1,20 +1,20 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { describe, it } from 'vitest';
-import { PortfolioStack } from '../lib/portfolio-stack';
-import { PortfolioConfig } from '../lib/types';
+import { WebsiteStack } from '../lib/website-stack';
+import { WebsiteConfig } from '../lib/types';
+import { HOSTED_ZONES } from '../lib/config';
 
-describe('PortfolioStack', () => {
+describe('WebsiteStack', () => {
   const app = new cdk.App();
-  const config: PortfolioConfig = {
+  const config: WebsiteConfig = {
     stage: 'beta',
     domainName: 'beta.brwyatt.me',
     aliases: ['www.beta.brwyatt.me'],
-    hostedZoneId: 'Z3MELYL57MW6HJ',
-    account: '123456789012',
+    hostedZone: HOSTED_ZONES.me,
   };
 
-  const stack = new PortfolioStack(app, 'TestPortfolioStack', config, {
+  const stack = new WebsiteStack(app, 'TestWebsiteStack', config, {
     env: { account: '123456789012', region: 'us-east-1' },
   });
   const template = Template.fromStack(stack);

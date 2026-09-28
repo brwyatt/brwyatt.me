@@ -40,7 +40,7 @@ function handler(event) {
     return request;
   }
 
-  // All other paths 301 redirect to https://brwyatt.me/
+  // All other paths 301 redirect to target domain
   var redirectUrl = '${config.targetDomain}' + uri;
   return {
     statusCode: 301,
@@ -84,10 +84,10 @@ function handler(event) {
 
     for (const domain of config.domains) {
       const cleanDomainId = domain.domainName.replace(/\./g, '-');
-      const hostedZoneName = domain.hostedZoneName ?? domain.domainName;
+      const hostedZoneName = domain.hostedZone.zoneName;
 
       const zone = route53.HostedZone.fromHostedZoneAttributes(this, `Zone-${cleanDomainId}`, {
-        hostedZoneId: domain.hostedZoneId,
+        hostedZoneId: domain.hostedZone.hostedZoneId,
         zoneName: hostedZoneName,
       });
 
