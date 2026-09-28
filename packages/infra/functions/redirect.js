@@ -1,11 +1,9 @@
-import cf from 'cloudfront';
+// Template placeholder replaced by CDK at synthesis time
+var TARGET_DOMAIN = '__TARGET_DOMAIN__';
 
-const kvsHandle = cf.kvs();
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-async function handler(event) {
-  const request = event.request;
-  const uri = request.uri;
+function handler(event) {
+  var request = event.request;
+  var uri = request.uri;
 
   // Pass-through paths required by email, federation, and identity protocols
   if (uri.startsWith('/.well-known/') || uri === '/keybase.txt' || uri === '/robots.txt') {
@@ -13,20 +11,16 @@ async function handler(event) {
   }
 
   // All other paths 301 redirect to target domain
-  try {
-    const targetDomain = await kvsHandle.get('targetDomain');
-    return {
-      statusCode: 301,
-      statusDescription: 'Moved Permanently',
-      headers: {
-        location: { value: targetDomain + uri },
-        'cache-control': { value: 'public, max-age=86400' },
-      },
-    };
-  } catch {
-    return {
-      statusCode: 500,
-      statusDescription: 'Internal Server Error',
-    };
-  }
+  return {
+    statusCode: 301,
+    statusDescription: 'Moved Permanently',
+    headers: {
+      location: { value: TARGET_DOMAIN + uri },
+      'cache-control': { value: 'public, max-age=86400' },
+    },
+  };
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { handler };
 }
