@@ -19,6 +19,10 @@ on:
         description: 'Primary domain for CloudFront invalidation and smoke tests'
         required: true
         type: string
+      github_sync_function:
+        description: 'Name of the GitHub sync Lambda function'
+        required: true
+        type: string
     secrets:
       aws_role_arn:
         description: 'IAM Role ARN for AWS OIDC authentication'
@@ -64,6 +68,26 @@ jobs:
       - name: Sync Static Assets to S3
         run: |
           aws s3 sync packages/web/dist "s3://${{ inputs.bucket_name }}" --delete --exclude "data/*"
+
+      - name: Invoke GitHub Sync Lambda
+        run: |
+          RESPONSE=$(aws lambda invoke \
+            --function-name "${{ inputs.github_sync_function }}" \
+            /tmp/lambda-response.json)
+          echo "Invoke Response: $RESPONSE"
+          cat /tmp/lambda-response.json
+          echo ""
+
+          if echo "$RESPONSE" | grep -q '"FunctionError"'; then
+            echo "::error::Lambda execution failed (Unhandled Error)"
+            exit 1
+          fi
+
+          STATUS_CODE=$(jq -r '.statusCode // empty' /tmp/lambda-response.json)
+          if [ "$STATUS_CODE" != "200" ]; then
+            echo "::error::GitHub sync failed with status code ${STATUS_CODE}"
+            exit 1
+          fi
 
       - name: Invalidate CloudFront Cache
         run: |
