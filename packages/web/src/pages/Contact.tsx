@@ -2,7 +2,7 @@ import React from 'react';
 import { Mail, Key, Globe, Gamepad2 } from 'lucide-react';
 import { SITE_CONFIG, SOCIAL_LINKS } from '../data/site';
 import { InfoCard } from '../components/InfoCard';
-import { BlueskyIcon, GithubIcon, LinkedinIcon } from '../components/Footer';
+import { BlueskyIcon, GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 
 export const Contact: React.FC = () => {
   const getSocialIcon = (name: string) => {
