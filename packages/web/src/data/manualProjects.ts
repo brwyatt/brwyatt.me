@@ -13,15 +13,11 @@ import { ManualProject } from '../services/github.types';
  */
 export const MANUAL_PROJECTS: ManualProject[] = [
   {
-    name: 'brwyatt.me',
+    name: 'brwyatt.me (This site!)',
     fullName: 'brwyatt/brwyatt.me',
     description:
-      'Personal portfolio website, homelab dashboard, and AWS CDK serverless infrastructure.',
-    htmlUrl: 'https://github.com/brwyatt/brwyatt.me',
+      'Personal website and related infrastructure resources',
     homepage: 'https://brwyatt.me',
-    language: 'TypeScript',
-    isPinned: true,
     isFeatured: true,
-    topics: ['react', 'vite', 'aws-cdk', 'serverless', 'typescript', 'tailwind'],
   },
 ];
