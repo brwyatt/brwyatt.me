@@ -39,9 +39,7 @@ export const Projects: React.FC = () => {
       <section className="hero">
         <div>
           <h1>Projects & Open Source</h1>
-          <p>
-            Featured systems tools, automation libraries, and open source projects from GitHub.
-          </p>
+          <p>Featured systems tools, automation libraries, and open source projects from GitHub.</p>
         </div>
       </section>
 

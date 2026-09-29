@@ -43,9 +43,7 @@ export function mergeProjects(
 
     matchedManualNames.add(manual.name.toLowerCase());
 
-    const mergedTopics = Array.from(
-      new Set([...(gh.topics || []), ...(manual.topics || [])]),
-    );
+    const mergedTopics = Array.from(new Set([...(gh.topics || []), ...(manual.topics || [])]));
 
     return {
       ...gh,
@@ -60,7 +58,7 @@ export function mergeProjects(
       isFeatured:
         manual.isFeatured !== undefined
           ? manual.isFeatured
-          : gh.isFeatured ?? gh.isPinned ?? false,
+          : (gh.isFeatured ?? gh.isPinned ?? false),
     };
   });
 
@@ -92,7 +90,7 @@ export function mergeProjects(
  * Merges with manually curated projects (`MANUAL_PROJECTS`) with deduplication.
  * If `/data/projects.json` cannot be fetched (e.g. offline or network error), falls back to `MANUAL_PROJECTS`.
  */
-export async function fetchGithubProjects(_username: string = 'brwyatt'): Promise<{
+export async function fetchGithubProjects(): Promise<{
   projects: GithubRepo[];
   isCached: boolean;
   error: string | null;
@@ -113,8 +111,7 @@ export async function fetchGithubProjects(_username: string = 'brwyatt'): Promis
       error: null,
     };
   } catch (err: unknown) {
-    const errorMessage =
-      err instanceof Error ? err.message : 'Error fetching projects data.';
+    const errorMessage = err instanceof Error ? err.message : 'Error fetching projects data.';
 
     const fallbackProjects = mergeProjects([], MANUAL_PROJECTS);
     return {

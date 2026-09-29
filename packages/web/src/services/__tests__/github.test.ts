@@ -45,9 +45,7 @@ describe('mergeProjects', () => {
     expect(item.forksCount).toBe(3);
     expect(item.language).toBe('TypeScript');
     // Topics should be merged and deduplicated
-    expect(item.topics).toEqual(
-      expect.arrayContaining(['aws-cdk', 'react', 'vite', 'serverless']),
-    );
+    expect(item.topics).toEqual(expect.arrayContaining(['aws-cdk', 'react', 'vite', 'serverless']));
     expect(new Set(item.topics).size).toBe(item.topics.length);
   });
 
@@ -174,7 +172,7 @@ describe('fetchGithubProjects', () => {
       return { ok: false, status: 404 } as Response;
     });
 
-    const result = await fetchGithubProjects('brwyatt');
+    const result = await fetchGithubProjects();
     expect(result.error).toBeNull();
     expect(result.isCached).toBe(false);
     const brwyattMe = result.projects.find((p) => p.name === 'brwyatt.me');
@@ -190,7 +188,7 @@ describe('fetchGithubProjects', () => {
       status: 404,
     } as Response);
 
-    const result = await fetchGithubProjects('brwyatt');
+    const result = await fetchGithubProjects();
     expect(result.error).toContain('HTTP 404');
     const brwyattMe = result.projects.find((p) => p.name === 'brwyatt.me');
     expect(brwyattMe).toBeDefined();
@@ -200,7 +198,7 @@ describe('fetchGithubProjects', () => {
   it('falls back to manual projects on complete network failure', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Complete network failure'));
 
-    const result = await fetchGithubProjects('brwyatt');
+    const result = await fetchGithubProjects();
     expect(result.isCached).toBe(false);
     expect(result.error).toContain('Complete network failure');
     const brwyattMe = result.projects.find((p) => p.name === 'brwyatt.me');
