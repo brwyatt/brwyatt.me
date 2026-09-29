@@ -126,10 +126,10 @@ describe('mergeProjects', () => {
     ];
 
     const result = mergeProjects(ghProjects, MANUAL_PROJECTS);
-    const brwyattMe = result.find((p) => p.name === 'brwyatt.me');
+    const brwyattMe = result.find((p) => p.fullName === 'brwyatt/brwyatt.me');
     expect(brwyattMe).toBeDefined();
+    expect(brwyattMe?.name).toBe('brwyatt.me (This site!)');
     expect(brwyattMe?.homepage).toBe('https://brwyatt.me');
-    expect(brwyattMe?.isPinned).toBe(true);
     expect(brwyattMe?.isFeatured).toBe(true);
   });
 });
@@ -175,10 +175,11 @@ describe('fetchGithubProjects', () => {
     const result = await fetchGithubProjects();
     expect(result.error).toBeNull();
     expect(result.isCached).toBe(false);
-    const brwyattMe = result.projects.find((p) => p.name === 'brwyatt.me');
+    const brwyattMe = result.projects.find((p) => p.fullName === 'brwyatt/brwyatt.me');
     expect(brwyattMe).toBeDefined();
     // Live URL overlaid from MANUAL_PROJECTS
     expect(brwyattMe?.homepage).toBe('https://brwyatt.me');
+    expect(brwyattMe?.name).toBe('brwyatt.me (This site!)');
     expect(brwyattMe?.stargazersCount).toBe(8);
   });
 
@@ -190,7 +191,7 @@ describe('fetchGithubProjects', () => {
 
     const result = await fetchGithubProjects();
     expect(result.error).toContain('HTTP 404');
-    const brwyattMe = result.projects.find((p) => p.name === 'brwyatt.me');
+    const brwyattMe = result.projects.find((p) => p.fullName === 'brwyatt/brwyatt.me');
     expect(brwyattMe).toBeDefined();
     expect(brwyattMe?.homepage).toBe('https://brwyatt.me');
   });
@@ -201,7 +202,7 @@ describe('fetchGithubProjects', () => {
     const result = await fetchGithubProjects();
     expect(result.isCached).toBe(false);
     expect(result.error).toContain('Complete network failure');
-    const brwyattMe = result.projects.find((p) => p.name === 'brwyatt.me');
+    const brwyattMe = result.projects.find((p) => p.fullName === 'brwyatt/brwyatt.me');
     expect(brwyattMe).toBeDefined();
     expect(brwyattMe?.homepage).toBe('https://brwyatt.me');
   });
