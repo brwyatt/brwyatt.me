@@ -33,32 +33,11 @@ export const Contact: React.FC = () => {
 
         {/* GPG / WKD Key Card */}
         <InfoCard
-          title="OpenPGP / WKD Key"
-          description="My public GPG key is published for cryptographic verification and is discoverable via OpenPGP Web Key Directory (WKD)."
+          title="OpenPGP Key"
+          description="My public GPG key (discoverable via WKD)"
           icon={<SocialIcon name="key" size={24} color="var(--accent)" />}
+          link={{ href: SITE_CONFIG.gpg.wkdPath, label: SITE_CONFIG.gpg.fingerprint, isExternal: false}}
         >
-          <div
-            style={{
-              marginTop: '0.75rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
-            <a href={SITE_CONFIG.gpg.wkdPath} target="_blank" rel="noopener noreferrer">
-              Direct Key Download (WKD)
-            </a>
-            <a href={SITE_CONFIG.gpg.keybaseUrl} target="_blank" rel="noopener noreferrer">
-              View Key on Keybase
-            </a>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-              Fingerprint:
-              <br />
-              <code style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>
-                {SITE_CONFIG.gpg.fingerprint}
-              </code>
-            </div>
-          </div>
         </InfoCard>
       </div>
     </div>
