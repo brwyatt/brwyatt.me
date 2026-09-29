@@ -15,8 +15,7 @@ export const MANUAL_PROJECTS: ManualProject[] = [
   {
     name: 'brwyatt.me (This site!)',
     fullName: 'brwyatt/brwyatt.me',
-    description:
-      'Personal website and related infrastructure resources',
+    description: 'Personal website and related infrastructure resources',
     homepage: 'https://brwyatt.me',
     isFeatured: true,
   },
