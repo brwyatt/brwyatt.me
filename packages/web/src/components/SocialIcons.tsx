@@ -1,4 +1,5 @@
 import React from 'react';
+import { Mail, Key, Globe, Gamepad2 } from 'lucide-react';
 
 export const BlueskyIcon: React.FC<{ size?: number; color?: string }> = ({
   size = 18,
@@ -58,3 +59,29 @@ export const LinkedinIcon: React.FC<{ size?: number; color?: string }> = ({
     <circle cx="4" cy="4" r="2" />
   </svg>
 );
+
+interface SocialIconProps {
+  name: string;
+  size?: number;
+  color?: string;
+}
+
+export const SocialIcon: React.FC<SocialIconProps> = ({ name, size = 18, color }) => {
+  switch (name.toLowerCase()) {
+    case 'github':
+      return <GithubIcon size={size} color={color} />;
+    case 'linkedin':
+      return <LinkedinIcon size={size} color={color} />;
+    case 'bluesky':
+      return <BlueskyIcon size={size} color={color} />;
+    case 'steam':
+      return <Gamepad2 size={size} color={color} />;
+    case 'mail':
+      return <Mail size={size} color={color} />;
+    case 'key':
+    case 'gpg':
+      return <Key size={size} color={color} />;
+    default:
+      return <Globe size={size} color={color} />;
+  }
+};

@@ -1,23 +1,9 @@
 import React from 'react';
-import { Mail } from 'lucide-react';
 import { SITE_CONFIG, SOCIAL_LINKS } from '../data/site';
-import { BlueskyIcon, GithubIcon, LinkedinIcon } from './SocialIcons';
+import { SocialIcon } from './SocialIcons';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-
-  const getSocialIcon = (name: string) => {
-    switch (name.toLowerCase()) {
-      case 'github':
-        return <GithubIcon size={18} />;
-      case 'linkedin':
-        return <LinkedinIcon size={18} />;
-      case 'bluesky':
-        return <BlueskyIcon size={18} />;
-      default:
-        return null;
-    }
-  };
 
   return (
     <footer className="site-footer">
@@ -31,13 +17,13 @@ export const Footer: React.FC = () => {
           ).map((link) => (
             <li key={link.name}>
               <a href={link.url} target="_blank" rel="noopener noreferrer" aria-label={link.label}>
-                {getSocialIcon(link.name)}
+                <SocialIcon name={link.name} size={18} />
               </a>
             </li>
           ))}
           <li>
             <a href={`mailto:${SITE_CONFIG.email}`} aria-label={`Email ${SITE_CONFIG.name}`}>
-              <Mail size={18} />
+              <SocialIcon name="mail" size={18} />
             </a>
           </li>
         </ul>
