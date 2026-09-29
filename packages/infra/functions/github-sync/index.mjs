@@ -228,14 +228,14 @@ export async function fetchGitHubData(token, username, config = DEFAULT_SCORING_
 
   const pinnedProjects = pinned.map((p) => ({
     ...p,
+    pinned: true,
     isPinned: true,
-    isFeatured: true,
   }));
 
   const activeProjects = candidates.map((c) => ({
     ...c,
+    pinned: false,
     isPinned: false,
-    isFeatured: false,
   }));
 
   const projects = [...pinnedProjects, ...activeProjects];
@@ -243,7 +243,6 @@ export async function fetchGitHubData(token, username, config = DEFAULT_SCORING_
   return {
     updatedAt: now.toISOString(),
     projects,
-    pinned: pinnedProjects,
   };
 }
 
@@ -284,16 +283,17 @@ export async function handler(event, context, clientOverrides = {}) {
     }),
   );
 
-  const activeCount = data.projects.length - data.pinned.length;
+  const pinnedCount = data.projects.filter((p) => p.pinned).length;
+  const activeCount = data.projects.length - pinnedCount;
   console.log(
-    `Successfully wrote ${data.projects.length} projects (${data.pinned.length} pinned, ${activeCount} active) to S3.`,
+    `Successfully wrote ${data.projects.length} projects (${pinnedCount} pinned, ${activeCount} active) to S3.`,
   );
   return {
     statusCode: 200,
     body: JSON.stringify({
       message: 'GitHub sync completed successfully',
       projectCount: data.projects.length,
-      pinnedCount: data.pinned.length,
+      pinnedCount,
       activeCount,
       updatedAt: data.updatedAt,
     }),

@@ -286,15 +286,15 @@ describe('github-sync Lambda function', () => {
       } as Response);
 
       const result = await fetchGitHubData('valid-token', 'brwyatt');
-      expect(result.pinned).toHaveLength(1);
-      expect(result.pinned[0].name).toBe('pinned-repo');
-      expect(result.pinned[0].isPinned).toBe(true);
+      expect(result.pinned).toBeUndefined();
 
       // Unified projects list contains pinned first, followed by qualifying candidate
       expect(result.projects).toHaveLength(2);
       expect(result.projects[0].name).toBe('pinned-repo');
+      expect(result.projects[0].pinned).toBe(true);
       expect(result.projects[0].isPinned).toBe(true);
       expect(result.projects[1].name).toBe('popular-active-repo');
+      expect(result.projects[1].pinned).toBe(false);
       expect(result.projects[1].isPinned).toBe(false);
       expect(result.projects[1].frecencyScore).toBeGreaterThanOrEqual(10);
     });
@@ -345,9 +345,10 @@ describe('github-sync Lambda function', () => {
       } as Response);
 
       const result = await fetchGitHubData('valid-token', 'brwyatt');
-      expect(result.pinned).toHaveLength(1);
+      expect(result.pinned).toBeUndefined();
       expect(result.projects).toHaveLength(1);
       expect(result.projects[0].name).toBe('solo-pinned');
+      expect(result.projects[0].pinned).toBe(true);
     });
   });
 
@@ -417,7 +418,8 @@ describe('github-sync Lambda function', () => {
 
       const savedBody = JSON.parse(putCall.input.Body);
       expect(savedBody.projects[0].name).toBe('dffmpeg');
-      expect(savedBody.pinned[0].name).toBe('dffmpeg');
+      expect(savedBody.projects[0].pinned).toBe(true);
+      expect(savedBody.pinned).toBeUndefined();
     });
   });
 });
