@@ -1,6 +1,6 @@
 import React from 'react';
 import { GithubRepo } from '../services/github.types';
-import { ExternalLink, Star, GitFork, Code } from 'lucide-react';
+import { ExternalLink, Star, GitFork, Code, Globe, Pin } from 'lucide-react';
 
 interface ProjectCardProps {
   project: GithubRepo;
@@ -10,20 +10,58 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   return (
     <div className="card" data-testid="project-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <h3 className="card-title">
-          <a href={project.htmlUrl} target="_blank" rel="noopener noreferrer">
-            {project.name}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+            <h3 className="card-title" style={{ margin: 0 }}>
+              <a href={project.htmlUrl} target="_blank" rel="noopener noreferrer">
+                {project.name}
+              </a>
+            </h3>
+            {project.isPinned && (
+              <span
+                className="tag"
+                style={{
+                  backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                  color: 'var(--accent)',
+                  borderColor: 'var(--accent)',
+                  fontSize: '0.75rem',
+                  padding: '0.1rem 0.4rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.2rem',
+                }}
+                title="Pinned Project"
+              >
+                <Pin size={12} /> Pinned
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+          {project.homepage && (
+            <a
+              href={project.homepage}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Visit ${project.name} live website`}
+              title="Live site"
+              style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center' }}
+            >
+              <Globe size={16} />
+            </a>
+          )}
+          <a
+            href={project.htmlUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`View ${project.name} on GitHub`}
+            title="GitHub repository"
+            style={{ color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center' }}
+          >
+            <ExternalLink size={16} />
           </a>
-        </h3>
-        <a
-          href={project.htmlUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`View ${project.name} on GitHub`}
-          style={{ color: 'var(--text-muted)' }}
-        >
-          <ExternalLink size={16} />
-        </a>
+        </div>
       </div>
 
       <p className="card-description">{project.description || 'No description provided.'}</p>

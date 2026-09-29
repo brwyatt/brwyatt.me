@@ -1,0 +1,56 @@
+{
+  "updatedAt": "2026-03-29T12:00:00.000Z",
+  "projects": [
+    {
+      "id": 102,
+      "name": "brwyatt.me",
+      "fullName": "brwyatt/brwyatt.me",
+      "description": "Portfolio website and AWS CDK infrastructure.",
+      "htmlUrl": "https://github.com/brwyatt/brwyatt.me",
+      "homepage": null,
+      "language": "TypeScript",
+      "stargazersCount": 5,
+      "forksCount": 0,
+      "isFork": false,
+      "isArchived": false,
+      "updatedAt": "2026-03-29T00:00:00.000Z",
+      "topics": ["react", "vite", "aws-cdk", "serverless", "typescript"],
+      "isPinned": true,
+      "isFeatured": true
+    },
+    {
+      "id": 101,
+      "name": "dffmpeg",
+      "fullName": "brwyatt/dffmpeg",
+      "description": "Centrally-coordinated distributed FFmpeg transcoding job manager and cluster worker nodes.",
+      "htmlUrl": "https://github.com/brwyatt/dffmpeg",
+      "homepage": null,
+      "language": "Python",
+      "stargazersCount": 12,
+      "forksCount": 2,
+      "isFork": false,
+      "isArchived": false,
+      "updatedAt": "2026-03-28T18:00:00.000Z",
+      "topics": ["ffmpeg", "distributed-systems", "python", "homelab", "video-transcoding"],
+      "isPinned": true,
+      "isFeatured": true
+    },
+    {
+      "id": 103,
+      "name": "ansible-config",
+      "fullName": "brwyatt/ansible-config",
+      "description": "Declarative infrastructure-as-code configuration and automated orchestration for homelab nodes.",
+      "htmlUrl": "https://github.com/brwyatt/ansible-config",
+      "homepage": null,
+      "language": "YAML",
+      "stargazersCount": 4,
+      "forksCount": 0,
+      "isFork": false,
+      "isArchived": false,
+      "updatedAt": "2026-03-25T14:30:00.000Z",
+      "topics": ["ansible", "infrastructure-as-code", "homelab", "proxmox"],
+      "isPinned": false,
+      "isFeatured": false
+    }
+  ]
+}

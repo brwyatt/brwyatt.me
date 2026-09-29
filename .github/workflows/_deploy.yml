@@ -63,7 +63,7 @@ jobs:
 
       - name: Sync Static Assets to S3
         run: |
-          aws s3 sync packages/web/dist "s3://${{ inputs.bucket_name }}" --delete
+          aws s3 sync packages/web/dist "s3://${{ inputs.bucket_name }}" --delete --exclude "data/*"
 
       - name: Invalidate CloudFront Cache
         run: |
