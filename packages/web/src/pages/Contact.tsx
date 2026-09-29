@@ -36,9 +36,12 @@ export const Contact: React.FC = () => {
           title="OpenPGP Key"
           description="My public GPG key (discoverable via WKD)"
           icon={<SocialIcon name="key" size={24} color="var(--accent)" />}
-          link={{ href: SITE_CONFIG.gpg.wkdPath, label: SITE_CONFIG.gpg.fingerprint, isExternal: false}}
-        >
-        </InfoCard>
+          link={{
+            href: SITE_CONFIG.gpg.wkdPath,
+            label: SITE_CONFIG.gpg.fingerprint,
+            isExternal: false,
+          }}
+        ></InfoCard>
       </div>
     </div>
   );
