@@ -5,12 +5,18 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as eventTargets from 'aws-cdk-lib/aws-events-targets';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as path from 'path';
 import { Construct } from 'constructs';
 import { WebsiteConfig } from './types';
 
 export class WebsiteStack extends cdk.Stack {
   public readonly siteBucket: s3.Bucket;
   public readonly distribution: cloudfront.Distribution;
+  public readonly githubSyncFunction: lambda.Function;
 
   constructor(scope: Construct, id: string, config: WebsiteConfig, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -131,12 +137,66 @@ export class WebsiteStack extends cdk.Stack {
       }
     }
 
+    // 7. GitHub Projects Sync Lambda Function
+    const ssmParamName = `/brwyatt-me/${config.stage}/github-token`;
+    const ssmParamArn = `arn:aws:ssm:${this.region}:${this.account}:parameter${ssmParamName}`;
+
+    this.githubSyncFunction = new lambda.Function(this, 'GitHubSyncFunction', {
+      functionName: `brwyatt-me-${config.stage}-github-sync`,
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '../functions/github-sync')),
+      architecture: lambda.Architecture.ARM_64,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        BUCKET_NAME: this.siteBucket.bucketName,
+        SSM_PARAM_NAME: ssmParamName,
+        GITHUB_USER: 'brwyatt',
+        OBJECT_KEY: 'data/projects.json',
+      },
+    });
+
+    // Grant Lambda permission to write projects.json to S3 bucket
+    this.siteBucket.grantPut(this.githubSyncFunction, 'data/projects.json');
+
+    // Grant Lambda permission to read the GitHub token from SSM Parameter Store
+    this.githubSyncFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['ssm:GetParameter'],
+        resources: [ssmParamArn],
+      }),
+    );
+
+    // Grant Lambda permission to decrypt with KMS (default aws/ssm key)
+    this.githubSyncFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['kms:Decrypt'],
+        resources: ['*'],
+        conditions: {
+          StringEquals: {
+            'kms:CallerAccount': this.account,
+          },
+        },
+      }),
+    );
+
+    // 8. EventBridge Schedule Rule (every 6 hours)
+    new events.Rule(this, 'GitHubSyncScheduleRule', {
+      ruleName: `brwyatt-me-${config.stage}-github-sync-schedule`,
+      schedule: events.Schedule.rate(cdk.Duration.hours(6)),
+      targets: [new eventTargets.LambdaFunction(this.githubSyncFunction)],
+    });
+
     // Outputs
     new cdk.CfnOutput(this, 'DistributionDomainName', {
       value: this.distribution.distributionDomainName,
     });
     new cdk.CfnOutput(this, 'SiteBucketName', {
       value: this.siteBucket.bucketName,
+    });
+    new cdk.CfnOutput(this, 'GitHubSyncFunctionName', {
+      value: this.githubSyncFunction.functionName,
     });
   }
 }
