@@ -16,7 +16,9 @@ export const MANUAL_PROJECTS: ManualProject[] = [
     name: 'brwyatt.me (This site!)',
     fullName: 'brwyatt/brwyatt.me',
     description: 'Personal website and related infrastructure resources',
+    htmlUrl: 'https://github.com/brwyatt/brwyatt.me',
     homepage: 'https://brwyatt.me',
+    language: 'TypeScript',
     isFeatured: true,
   },
 ];
