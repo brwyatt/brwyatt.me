@@ -21,5 +21,6 @@ jobs:
       stack_prefix: Prod
       bucket_name: brwyatt-me-prod-site-assets
       domain: brwyatt.me
+      github_sync_function: brwyatt-me-prod-github-sync
     secrets:
       aws_role_arn: ${{ secrets.AWS_ROLE_ARN_PROD }}

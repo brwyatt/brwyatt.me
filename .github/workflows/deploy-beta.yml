@@ -23,5 +23,6 @@ jobs:
       stack_prefix: Beta
       bucket_name: brwyatt-me-beta-site-assets
       domain: beta.brwyatt.me
+      github_sync_function: brwyatt-me-beta-github-sync
     secrets:
       aws_role_arn: ${{ secrets.AWS_ROLE_ARN_BETA }}
