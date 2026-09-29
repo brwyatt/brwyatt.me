@@ -138,7 +138,6 @@ describe('mergeProjects', () => {
 
 describe('fetchGithubProjects', () => {
   beforeEach(() => {
-    localStorage.clear();
     vi.restoreAllMocks();
   });
 
@@ -185,74 +184,17 @@ describe('fetchGithubProjects', () => {
     expect(brwyattMe?.stargazersCount).toBe(8);
   });
 
-  it('falls back to GitHub REST API when /data/projects.json is not found (404)', async () => {
-    const mockApiResponse = [
-      {
-        id: 1,
-        name: 'test-repo',
-        full_name: 'brwyatt/test-repo',
-        description: 'A test repo',
-        html_url: 'https://github.com/brwyatt/test-repo',
-        homepage: null,
-        language: 'TypeScript',
-        stargazers_count: 10,
-        forks_count: 2,
-        fork: false,
-        archived: false,
-        updated_at: '2026-01-01T00:00:00Z',
-        topics: ['test'],
-      },
-    ];
-
-    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
-      const url = typeof input === 'string' ? input : (input as Request).url;
-      if (url.includes('/data/projects.json')) {
-        return { ok: false, status: 404 } as Response;
-      }
-      if (url.includes('api.github.com')) {
-        return {
-          ok: true,
-          json: async () => mockApiResponse,
-        } as Response;
-      }
-      return { ok: false, status: 500 } as Response;
-    });
+  it('falls back to manual projects when /data/projects.json is not found (404)', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: false,
+      status: 404,
+    } as Response);
 
     const result = await fetchGithubProjects('brwyatt');
-    expect(result.error).toBeNull();
-    const testRepo = result.projects.find((p) => p.name === 'test-repo');
-    expect(testRepo).toBeDefined();
-    expect(testRepo?.stargazersCount).toBe(10);
-  });
-
-  it('serves valid cached data if within TTL without calling fetch', async () => {
-    const cachedProjects = [
-      {
-        id: 99,
-        name: 'cached-repo',
-        fullName: 'brwyatt/cached-repo',
-        description: 'From cache',
-        htmlUrl: 'https://github.com/brwyatt/cached-repo',
-        homepage: null,
-        language: 'Python',
-        stargazersCount: 5,
-        forksCount: 0,
-        isFork: false,
-        isArchived: false,
-        updatedAt: '2026-01-01T00:00:00Z',
-        topics: [],
-      },
-    ];
-
-    localStorage.setItem('brwyatt_github_repos_v1', JSON.stringify(cachedProjects));
-    localStorage.setItem('brwyatt_github_repos_timestamp', Date.now().toString());
-
-    const fetchSpy = vi.spyOn(globalThis, 'fetch');
-
-    const result = await fetchGithubProjects('brwyatt');
-    expect(result.isCached).toBe(true);
-    expect(result.projects).toEqual(cachedProjects);
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(result.error).toContain('HTTP 404');
+    const brwyattMe = result.projects.find((p) => p.name === 'brwyatt.me');
+    expect(brwyattMe).toBeDefined();
+    expect(brwyattMe?.homepage).toBe('https://brwyatt.me');
   });
 
   it('falls back to manual projects on complete network failure', async () => {
