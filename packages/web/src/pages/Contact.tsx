@@ -1,24 +1,9 @@
 import React from 'react';
-import { Mail, Key, Globe, Gamepad2 } from 'lucide-react';
 import { SITE_CONFIG, SOCIAL_LINKS } from '../data/site';
 import { InfoCard } from '../components/InfoCard';
-import { BlueskyIcon, GithubIcon, LinkedinIcon } from '../components/Footer';
+import { SocialIcon } from '../components/SocialIcons';
 
 export const Contact: React.FC = () => {
-  const getSocialIcon = (name: string) => {
-    switch (name.toLowerCase()) {
-      case 'github':
-        return <GithubIcon size={24} color="var(--accent)" />;
-      case 'linkedin':
-        return <LinkedinIcon size={24} color="var(--accent)" />;
-      case 'bluesky':
-        return <BlueskyIcon size={24} />;
-      case 'steam':
-        return <Gamepad2 size={24} color="var(--accent)" />;
-      default:
-        return <Globe size={24} color="var(--accent)" />;
-    }
-  };
   return (
     <div>
       <section className="hero">
@@ -31,7 +16,7 @@ export const Contact: React.FC = () => {
         <InfoCard
           title="Email"
           description="For direct inquiries or communication."
-          icon={<Mail size={24} color="var(--accent)" />}
+          icon={<SocialIcon name="mail" size={24} color="var(--accent)" />}
           link={{ href: `mailto:${SITE_CONFIG.email}`, label: SITE_CONFIG.email }}
         />
 
@@ -41,39 +26,18 @@ export const Contact: React.FC = () => {
             key={item.name}
             title={item.name}
             description={`Connect via ${item.name}.`}
-            icon={getSocialIcon(item.name)}
+            icon={<SocialIcon name={item.name} size={24} color="var(--accent)" />}
             link={{ href: item.url, label: item.url.replace(/^https?:\/\//, ''), isExternal: true }}
           />
         ))}
 
         {/* GPG / WKD Key Card */}
         <InfoCard
-          title="OpenPGP / WKD Key"
-          description="My public GPG key is published for cryptographic verification and is discoverable via OpenPGP Web Key Directory (WKD)."
-          icon={<Key size={24} color="var(--accent)" />}
+          title="OpenPGP Key"
+          description="My public GPG key (discoverable via WKD)"
+          icon={<SocialIcon name="key" size={24} color="var(--accent)" />}
+          link={{ href: SITE_CONFIG.gpg.wkdPath, label: SITE_CONFIG.gpg.fingerprint, isExternal: false}}
         >
-          <div
-            style={{
-              marginTop: '0.75rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-            }}
-          >
-            <a href={SITE_CONFIG.gpg.wkdPath} target="_blank" rel="noopener noreferrer">
-              Direct Key Download (WKD)
-            </a>
-            <a href={SITE_CONFIG.gpg.keybaseUrl} target="_blank" rel="noopener noreferrer">
-              View Key on Keybase
-            </a>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
-              Fingerprint:
-              <br />
-              <code style={{ fontSize: '0.75rem', color: 'var(--accent)' }}>
-                {SITE_CONFIG.gpg.fingerprint}
-              </code>
-            </div>
-          </div>
         </InfoCard>
       </div>
     </div>

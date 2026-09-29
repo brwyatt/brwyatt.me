@@ -7,7 +7,6 @@ export interface SocialLink {
 export interface GpgKeyInfo {
   fingerprint: string;
   wkdPath: string;
-  keybaseUrl: string;
 }
 
 export interface SiteConfig {
@@ -27,7 +26,6 @@ export const SITE_CONFIG: SiteConfig = {
   gpg: {
     fingerprint: '7139 4C8E CA4A B1BE B85E  B202 B83E E2D5 5C50 C6B2',
     wkdPath: '/.well-known/openpgpkey/hu/39z93up6pguuos5fb5cyx8yxzp3t9foa',
-    keybaseUrl: 'https://keybase.io/brwyatt',
   },
 };
 

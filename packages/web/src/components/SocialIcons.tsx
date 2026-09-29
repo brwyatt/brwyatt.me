@@ -1,0 +1,87 @@
+import React from 'react';
+import { Mail, Key, Globe, Gamepad2 } from 'lucide-react';
+
+export const BlueskyIcon: React.FC<{ size?: number; color?: string }> = ({
+  size = 18,
+  color = 'currentColor',
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 568 501"
+    fill={color}
+    aria-hidden="true"
+    style={{ display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path d="M123.121 33.664C188.241 82.552 258.281 181.68 284 234.873c25.719-53.192 95.759-152.32 160.879-201.21C491.866-1.611 568-28.906 568 57.947c0 17.346-9.945 145.713-15.778 166.555-20.275 72.453-94.155 90.933-159.875 79.748C507.222 323.8 536.444 388.56 473.333 453.32c-119.259 122.37-170.889-30.82-189.333-86.42-18.444 55.6-70.074 208.79-189.333 86.42-63.111-64.76-33.889-129.52 80.987-149.07-65.72 11.185-139.6-7.295-159.875-79.748C9.945 203.659 0 75.291 0 57.946 0-28.906 76.135-1.612 123.121 33.664Z" />
+  </svg>
+);
+
+export const GithubIcon: React.FC<{ size?: number; color?: string }> = ({
+  size = 18,
+  color = 'currentColor',
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    style={{ display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+);
+
+export const LinkedinIcon: React.FC<{ size?: number; color?: string }> = ({
+  size = 18,
+  color = 'currentColor',
+}) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={color}
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    style={{ display: 'inline-block', verticalAlign: 'middle' }}
+  >
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+    <rect width="4" height="12" x="2" y="9" />
+    <circle cx="4" cy="4" r="2" />
+  </svg>
+);
+
+interface SocialIconProps {
+  name: string;
+  size?: number;
+  color?: string;
+}
+
+export const SocialIcon: React.FC<SocialIconProps> = ({ name, size = 18, color }) => {
+  switch (name.toLowerCase()) {
+    case 'github':
+      return <GithubIcon size={size} color={color} />;
+    case 'linkedin':
+      return <LinkedinIcon size={size} color={color} />;
+    case 'bluesky':
+      return <BlueskyIcon size={size} color={color} />;
+    case 'steam':
+      return <Gamepad2 size={size} color={color} />;
+    case 'mail':
+      return <Mail size={size} color={color} />;
+    case 'key':
+    case 'gpg':
+      return <Key size={size} color={color} />;
+    default:
+      return <Globe size={size} color={color} />;
+  }
+};
