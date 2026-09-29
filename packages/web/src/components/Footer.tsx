@@ -2,12 +2,15 @@ import React from 'react';
 import { Mail } from 'lucide-react';
 import { SITE_CONFIG, SOCIAL_LINKS } from '../data/site';
 
-export const BlueskyIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
+export const BlueskyIcon: React.FC<{ size?: number; color?: string }> = ({
+  size = 18,
+  color = 'currentColor',
+}) => (
   <svg
     width={size}
     height={size}
     viewBox="0 0 568 501"
-    fill="currentColor"
+    fill={color}
     aria-hidden="true"
     style={{ display: 'inline-block', verticalAlign: 'middle' }}
   >

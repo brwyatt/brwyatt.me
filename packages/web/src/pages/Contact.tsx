@@ -12,7 +12,7 @@ export const Contact: React.FC = () => {
       case 'linkedin':
         return <LinkedinIcon size={24} color="var(--accent)" />;
       case 'bluesky':
-        return <BlueskyIcon size={24} />;
+        return <BlueskyIcon size={24} color="var(--accent)" />;
       case 'steam':
         return <Gamepad2 size={24} color="var(--accent)" />;
       default:
