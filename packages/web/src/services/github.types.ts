@@ -15,7 +15,7 @@ export interface RawGithubRepo {
 }
 
 export interface GithubRepo {
-  id: number;
+  id: number | string;
   name: string;
   fullName: string;
   description: string | null;
@@ -28,6 +28,22 @@ export interface GithubRepo {
   isArchived: boolean;
   updatedAt: string;
   topics: string[];
+  isPinned?: boolean;
+  isFeatured?: boolean;
+  frecencyScore?: number;
+}
+
+export interface ManualProject {
+  id?: number | string;
+  name: string;
+  fullName?: string;
+  description?: string;
+  htmlUrl?: string;
+  homepage?: string;
+  language?: string;
+  topics?: string[];
+  isPinned?: boolean;
+  isFeatured?: boolean;
 }
 
 export interface ProjectsState {

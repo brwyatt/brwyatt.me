@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { fetchGithubProjects } from '../services/github';
 import { GithubRepo } from '../services/github.types';
 import { ProjectCard } from '../components/ProjectCard';
@@ -8,11 +8,12 @@ import { RefreshCw, AlertCircle } from 'lucide-react';
 export const Projects: React.FC = () => {
   const [projects, setProjects] = useState<GithubRepo[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
   const [isCached, setIsCached] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const loadData = async () => {
     setIsLoading(true);
+    setError(null);
     const result = await fetchGithubProjects('brwyatt');
     setProjects(result.projects);
     setIsCached(result.isCached);
@@ -34,6 +35,16 @@ export const Projects: React.FC = () => {
       ignore = true;
     };
   }, []);
+
+  const sortedProjects = [...projects].sort((a, b) => {
+    const aPin = a.isPinned ? 1 : 0;
+    const bPin = b.isPinned ? 1 : 0;
+    if (aPin !== bPin) return bPin - aPin;
+    const aFeat = a.isFeatured ? 1 : 0;
+    const bFeat = b.isFeatured ? 1 : 0;
+    if (aFeat !== bFeat) return bFeat - aFeat;
+    return (b.stargazersCount || 0) - (a.stargazersCount || 0);
+  });
 
   return (
     <div>
@@ -90,7 +101,7 @@ export const Projects: React.FC = () => {
         <LoadingSpinner message="Fetching repositories from GitHub..." />
       ) : (
         <div className="card-grid">
-          {projects.map((project) => (
+          {sortedProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
         </div>
