@@ -6,67 +6,6 @@ const CACHE_TIMESTAMP_KEY = 'brwyatt_github_repos_timestamp';
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour TTL
 
 /**
- * Curated offline fallback projects used when network is unavailable,
- * rate limit is reached, or running offline in hermetic environments.
- */
-export const FALLBACK_PROJECTS: GithubRepo[] = [
-  {
-    id: 101,
-    name: 'dffmpeg',
-    fullName: 'brwyatt/dffmpeg',
-    description:
-      'Centrally-coordinated distributed FFmpeg transcoding job manager and cluster worker nodes.',
-    htmlUrl: 'https://github.com/brwyatt/dffmpeg',
-    homepage: null,
-    language: 'Python',
-    stargazersCount: 12,
-    forksCount: 2,
-    isFork: false,
-    isArchived: false,
-    updatedAt: new Date().toISOString(),
-    topics: ['ffmpeg', 'distributed-systems', 'python', 'homelab', 'video-transcoding'],
-    isPinned: true,
-    isFeatured: true,
-  },
-  {
-    id: 102,
-    name: 'brwyatt.me',
-    fullName: 'brwyatt/brwyatt.me',
-    description:
-      'Modern portfolio website and AWS CDK infrastructure for brwyatt.me and brwyatt.net.',
-    htmlUrl: 'https://github.com/brwyatt/brwyatt.me',
-    homepage: 'https://brwyatt.me',
-    language: 'TypeScript',
-    stargazersCount: 5,
-    forksCount: 0,
-    isFork: false,
-    isArchived: false,
-    updatedAt: new Date().toISOString(),
-    topics: ['react', 'vite', 'aws-cdk', 'serverless', 'typescript'],
-    isPinned: true,
-    isFeatured: true,
-  },
-  {
-    id: 103,
-    name: 'ansible-config',
-    fullName: 'brwyatt/ansible-config',
-    description:
-      'Declarative infrastructure-as-code configuration and automated orchestration for homelab nodes.',
-    htmlUrl: 'https://github.com/brwyatt/ansible-config',
-    homepage: null,
-    language: 'YAML',
-    stargazersCount: 4,
-    forksCount: 0,
-    isFork: false,
-    isArchived: false,
-    updatedAt: new Date().toISOString(),
-    topics: ['ansible', 'infrastructure-as-code', 'homelab', 'proxmox'],
-    isPinned: true,
-    isFeatured: true,
-  },
-];
-
-/**
  * Deduplicate and merge dynamic GitHub repositories with manually curated project entries.
  *
  * Matching is performed case-insensitively against name, fullName, or normalized htmlUrl.
@@ -159,7 +98,7 @@ export function mergeProjects(
  * 2. Attempts to fetch `/data/projects.json` (produced by the github-sync Lambda).
  * 3. Falls back to direct GitHub REST API if `/data/projects.json` is unavailable (e.g. local dev).
  * 4. Merges with manually curated projects (`MANUAL_PROJECTS`) with deduplication.
- * 5. Falls back to curated static fallback projects on total network/API error.
+ * 5. Falls back to curated static manual projects on total network/API error.
  */
 export async function fetchGithubProjects(username: string = 'brwyatt'): Promise<{
   projects: GithubRepo[];
@@ -268,7 +207,7 @@ export async function fetchGithubProjects(username: string = 'brwyatt'): Promise
     const errorMessage =
       err instanceof Error ? err.message : 'Error fetching fresh data from GitHub.';
 
-    // Return stale cache if available, or fallback
+    // Return stale cache if available, or fallback to manual projects
     try {
       const cachedData = localStorage.getItem(CACHE_KEY);
       if (cachedData) {
@@ -282,11 +221,11 @@ export async function fetchGithubProjects(username: string = 'brwyatt'): Promise
       // Fallback
     }
 
-    const mergedFallback = mergeProjects(FALLBACK_PROJECTS, MANUAL_PROJECTS);
+    const fallbackProjects = mergeProjects([], MANUAL_PROJECTS);
     return {
-      projects: mergedFallback,
+      projects: fallbackProjects,
       isCached: false,
-      error: errorMessage || 'Offline fallback mode.',
+      error: errorMessage || 'Offline mode.',
     };
   }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { fetchGithubProjects, mergeProjects, FALLBACK_PROJECTS } from '../github';
+import { fetchGithubProjects, mergeProjects } from '../github';
 import { GithubRepo, ManualProject } from '../github.types';
 import { MANUAL_PROJECTS } from '../../data/manualProjects';
 
@@ -255,7 +255,7 @@ describe('fetchGithubProjects', () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it('falls back to merged fallback projects on complete network failure', async () => {
+  it('falls back to manual projects on complete network failure', async () => {
     vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Complete network failure'));
 
     const result = await fetchGithubProjects('brwyatt');
