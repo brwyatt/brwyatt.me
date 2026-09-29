@@ -139,7 +139,7 @@ describe('github-sync Lambda function', () => {
       );
     });
 
-    it('filters out archived and forked repositories from recent list', async () => {
+    it('extracts and normalizes pinned repositories', async () => {
       vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
         ok: true,
         json: async () => ({
@@ -157,34 +157,6 @@ describe('github-sync Lambda function', () => {
                   },
                 ],
               },
-              repositories: {
-                nodes: [
-                  {
-                    databaseId: 2,
-                    name: 'active-repo',
-                    nameWithOwner: 'brwyatt/active-repo',
-                    url: 'https://github.com/brwyatt/active-repo',
-                    isFork: false,
-                    isArchived: false,
-                  },
-                  {
-                    databaseId: 3,
-                    name: 'forked-repo',
-                    nameWithOwner: 'brwyatt/forked-repo',
-                    url: 'https://github.com/brwyatt/forked-repo',
-                    isFork: true,
-                    isArchived: false,
-                  },
-                  {
-                    databaseId: 4,
-                    name: 'archived-repo',
-                    nameWithOwner: 'brwyatt/archived-repo',
-                    url: 'https://github.com/brwyatt/archived-repo',
-                    isFork: false,
-                    isArchived: true,
-                  },
-                ],
-              },
             },
           },
         }),
@@ -193,8 +165,6 @@ describe('github-sync Lambda function', () => {
       const result = await fetchGitHubData('valid-token', 'brwyatt');
       expect(result.pinned).toHaveLength(1);
       expect(result.pinned[0].name).toBe('pinned-repo');
-      expect(result.recent).toHaveLength(1);
-      expect(result.recent[0].name).toBe('active-repo');
       expect(result.updatedAt).toBeDefined();
     });
   });
@@ -242,9 +212,6 @@ describe('github-sync Lambda function', () => {
                     isArchived: false,
                   },
                 ],
-              },
-              repositories: {
-                nodes: [],
               },
             },
           },

@@ -45,32 +45,6 @@ query($login: String!) {
         }
       }
     }
-    repositories(first: 30, privacy: PUBLIC, isFork: false, orderBy: {field: PUSHED_AT, direction: DESC}) {
-      nodes {
-        databaseId
-        name
-        nameWithOwner
-        description
-        url
-        homepageUrl
-        primaryLanguage {
-          name
-          color
-        }
-        stargazerCount
-        forkCount
-        isFork
-        isArchived
-        pushedAt
-        repositoryTopics(first: 10) {
-          nodes {
-            topic {
-              name
-            }
-          }
-        }
-      }
-    }
   }
 }
 `;
@@ -124,18 +98,11 @@ export async function fetchGitHubData(token, username) {
   }
 
   const pinnedNodes = userData.pinnedItems?.nodes || [];
-  const repoNodes = userData.repositories?.nodes || [];
-
   const pinned = pinnedNodes.map(normalizeRepo).filter(Boolean);
-  const recent = repoNodes
-    .filter((r) => !r.isArchived && !r.isFork)
-    .map(normalizeRepo)
-    .filter(Boolean);
 
   return {
     updatedAt: new Date().toISOString(),
     pinned,
-    recent,
   };
 }
 
@@ -175,15 +142,12 @@ export async function handler(event, context, clientOverrides = {}) {
     }),
   );
 
-  console.log(
-    `Successfully wrote ${data.pinned.length} pinned and ${data.recent.length} recent projects to S3.`,
-  );
+  console.log(`Successfully wrote ${data.pinned.length} pinned projects to S3.`);
   return {
     statusCode: 200,
     body: JSON.stringify({
       message: 'GitHub sync completed successfully',
       pinnedCount: data.pinned.length,
-      recentCount: data.recent.length,
       updatedAt: data.updatedAt,
     }),
   };
