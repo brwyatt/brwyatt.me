@@ -66,10 +66,10 @@ describe('WebsiteStack', () => {
     });
   });
 
-  it('provisions the GitHub sync Lambda function on ARM64 Node 22', () => {
+  it('provisions the GitHub sync Lambda function on ARM64 Node 24', () => {
     template.hasResourceProperties('AWS::Lambda::Function', {
       FunctionName: 'brwyatt-me-beta-github-sync',
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
       Architectures: ['arm64'],
       Timeout: 30,
       MemorySize: 256,

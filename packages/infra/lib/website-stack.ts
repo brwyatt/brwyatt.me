@@ -143,7 +143,7 @@ export class WebsiteStack extends cdk.Stack {
 
     this.githubSyncFunction = new lambda.Function(this, 'GitHubSyncFunction', {
       functionName: `brwyatt-me-${config.stage}-github-sync`,
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: lambda.Runtime.NODEJS_24_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset(path.join(__dirname, '../functions/github-sync')),
       architecture: lambda.Architecture.ARM_64,
