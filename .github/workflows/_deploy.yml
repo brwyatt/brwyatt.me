@@ -60,9 +60,9 @@ jobs:
           aws-region: us-east-1
           audience: sts.amazonaws.com
 
-      - name: Deploy CDK Stacks
+      - name: Deploy Main CDK Stack
         run: |
-          npx cdk deploy BrwyattMe-${{ inputs.stack_prefix }} BrwyattMe-${{ inputs.stack_prefix }}-Redirects --require-approval never
+          npx cdk deploy BrwyattMe-${{ inputs.stack_prefix }} --require-approval never
         working-directory: packages/infra
 
       - name: Sync Static Assets to S3
@@ -95,6 +95,11 @@ jobs:
           if [ -n "$DIST_ID" ] && [ "$DIST_ID" != "None" ]; then
             aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
           fi
+
+      - name: Deploy Redirect CDK Stack
+        run: |
+          npx cdk deploy BrwyattMe-${{ inputs.stack_prefix }}-Redirects --require-approval never
+        working-directory: packages/infra
 
       - name: Run Smoke Tests
         run: bash scripts/smoke-test.sh https://${{ inputs.domain }}
