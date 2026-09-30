@@ -7,6 +7,13 @@ interface ProjectCardProps {
 }
 
 export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+  const isGithub = project.htmlUrl?.includes('github.com');
+  const hasDistinctHomepage = Boolean(
+    project.homepage &&
+      project.htmlUrl &&
+      project.homepage.replace(/\/+$/, '') !== project.htmlUrl.replace(/\/+$/, '')
+  );
+
   return (
     <div className="card" data-testid="project-card">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -39,9 +46,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
-          {project.homepage && (
+          {hasDistinctHomepage && (
             <a
-              href={project.homepage}
+              href={project.homepage!}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Visit ${project.name} live website`}
@@ -55,8 +62,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
             href={project.htmlUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`View ${project.name} on GitHub`}
-            title="GitHub repository"
+            aria-label={isGithub ? `View ${project.name} on GitHub` : `View ${project.name}`}
+            title={isGithub ? 'GitHub repository' : 'External link'}
             style={{ color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center' }}
           >
             <ExternalLink size={16} />

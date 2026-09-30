@@ -10,21 +10,21 @@ export const FOCUS_AREAS: FocusArea[] = [
     id: 'distributed-systems',
     title: 'Distributed Systems & Automation',
     description:
-      'Building resilient orchestration tooling, automated media processing pipelines (dffmpeg), and declarative infrastructure.',
+      'Building resilient orchestration tooling, automated processing pipelines, and declarative infrastructure to systematically reduce operational cognitive load.',
     icon: 'server',
   },
   {
     id: 'linux-cloud',
     title: 'Linux & Cloud Architecture',
     description:
-      'Deep expertise in Linux kernel tuning, high-performance networking, AWS serverless services, and modern Infrastructure-as-Code with AWS CDK.',
+      'Deep expertise in Linux internals, high-performance networking, and modern Infrastructure-as-Code to support highly available, resilient environments.',
     icon: 'terminal',
   },
   {
-    id: 'homelab',
-    title: 'High-Availability Homelab',
+    id: 'infrastructure-homelab',
+    title: 'Infrastructure & Homelab',
     description:
-      'Hyper-converged 6-node Proxmox VE cluster, multi-gigabit Ceph storage fabrics, FreeIPA identity federation, and automated operations.',
+      'Designing and maintaining hyper-converged virtualization and distributed storage fabrics that serve as a real-world testbed for continuous integration.',
     icon: 'shield',
   },
 ];

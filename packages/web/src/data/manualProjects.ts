@@ -15,10 +15,41 @@ export const MANUAL_PROJECTS: ManualProject[] = [
   {
     name: 'brwyatt.me (This site!)',
     fullName: 'brwyatt/brwyatt.me',
-    description: 'Personal website and related infrastructure resources',
+    description:
+      'The underlying infrastructure, automation, and TypeScript source for this personal website.',
     htmlUrl: 'https://github.com/brwyatt/brwyatt.me',
     homepage: 'https://brwyatt.me',
     language: 'TypeScript',
+    isPinned: true,
+    isFeatured: true,
+  },
+  {
+    name: 'dffmpeg',
+    fullName: 'brwyatt/dffmpeg',
+    description:
+      'A centrally-coordinated distributed FFmpeg worker job manager utilizing Python and message queues for seamless homelab media transcoding.',
+    htmlUrl: 'https://github.com/brwyatt/dffmpeg',
+    isPinned: true,
+    isFeatured: true,
+  },
+  {
+    name: 'ansible-config',
+    fullName: 'brwyatt/ansible-config',
+    description:
+      'A dynamic Infrastructure-as-Code repository demonstrating flexible, declarative deployment models over static host definitions.',
+    htmlUrl: 'https://github.com/brwyatt/ansible-config',
+    isPinned: true,
+    isFeatured: true,
+  },
+  {
+    name: 'Homelab Hardware Designs',
+    description:
+      'Custom 3D-printed structural components and mounting brackets for infrastructure hardware.',
+    htmlUrl: 'https://makerworld.com/en/@brwyatt',
+    homepage: 'https://makerworld.com/en/@brwyatt',
+    language: 'CAD / 3D',
+    topics: ['3d-printing', 'homelab', 'hardware', 'cad'],
+    isPinned: true,
     isFeatured: true,
   },
 ];
