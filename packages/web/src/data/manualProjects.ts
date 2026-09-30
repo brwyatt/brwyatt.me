@@ -42,13 +42,13 @@ export const MANUAL_PROJECTS: ManualProject[] = [
     isFeatured: true,
   },
   {
-    name: 'Homelab Hardware Designs',
+    name: 'Functional 3D Prints & Models',
     description:
-      'Custom 3D-printed structural components and mounting brackets for infrastructure hardware.',
+      'Functional designs and utility prints—ranging from homelab brackets and home automation enclosures to lamps, camera mounts, and everyday fixes.',
     htmlUrl: 'https://makerworld.com/en/@brwyatt',
     homepage: 'https://makerworld.com/en/@brwyatt',
     language: 'CAD / 3D',
-    topics: ['3d-printing', 'homelab', 'hardware', 'cad'],
+    topics: ['3d-printing', 'functional-print', 'makerworld', 'cad'],
     isPinned: true,
     isFeatured: true,
   },

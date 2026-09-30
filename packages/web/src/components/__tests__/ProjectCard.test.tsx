@@ -55,14 +55,14 @@ describe('ProjectCard', () => {
   it('does not render duplicate globe when homepage matches htmlUrl', () => {
     const nonGithubProject: GithubRepo = {
       ...mockProject,
-      name: 'Homelab Hardware Designs',
+      name: 'Functional 3D Prints & Models',
       htmlUrl: 'https://makerworld.com/en/@brwyatt',
       homepage: 'https://makerworld.com/en/@brwyatt',
     };
     render(<ProjectCard project={nonGithubProject} />);
 
     expect(screen.queryByRole('link', { name: /live website/i })).not.toBeInTheDocument();
-    const externalLink = screen.getByRole('link', { name: /view homelab hardware designs/i });
+    const externalLink = screen.getByRole('link', { name: /view functional 3d prints & models/i });
     expect(externalLink).toBeInTheDocument();
     expect(externalLink).toHaveAttribute('href', 'https://makerworld.com/en/@brwyatt');
   });

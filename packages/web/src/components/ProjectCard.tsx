@@ -10,8 +10,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   const isGithub = project.htmlUrl?.includes('github.com');
   const hasDistinctHomepage = Boolean(
     project.homepage &&
-      project.htmlUrl &&
-      project.homepage.replace(/\/+$/, '') !== project.htmlUrl.replace(/\/+$/, '')
+    project.htmlUrl &&
+    project.homepage.replace(/\/+$/, '') !== project.htmlUrl.replace(/\/+$/, ''),
   );
 
   return (
