@@ -39,7 +39,7 @@ describe('ProjectCard', () => {
     expect(screen.getByText('No description provided.')).toBeInTheDocument();
   });
 
-  it('renders live website link when homepage is present', () => {
+  it('renders live website link when distinct homepage is present', () => {
     const projectWithHomepage: GithubRepo = {
       ...mockProject,
       name: 'brwyatt.me',
@@ -50,6 +50,21 @@ describe('ProjectCard', () => {
     const liveSiteLink = screen.getByRole('link', { name: /visit brwyatt\.me live website/i });
     expect(liveSiteLink).toBeInTheDocument();
     expect(liveSiteLink).toHaveAttribute('href', 'https://brwyatt.me');
+  });
+
+  it('does not render duplicate globe when homepage matches htmlUrl', () => {
+    const nonGithubProject: GithubRepo = {
+      ...mockProject,
+      name: 'Functional 3D Prints & Models',
+      htmlUrl: 'https://makerworld.com/en/@brwyatt',
+      homepage: 'https://makerworld.com/en/@brwyatt',
+    };
+    render(<ProjectCard project={nonGithubProject} />);
+
+    expect(screen.queryByRole('link', { name: /live website/i })).not.toBeInTheDocument();
+    const externalLink = screen.getByRole('link', { name: /view functional 3d prints & models/i });
+    expect(externalLink).toBeInTheDocument();
+    expect(externalLink).toHaveAttribute('href', 'https://makerworld.com/en/@brwyatt');
   });
 
   it('renders pinned badge when isPinned is true', () => {
