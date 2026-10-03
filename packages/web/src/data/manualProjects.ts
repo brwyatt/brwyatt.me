@@ -31,6 +31,16 @@ export const MANUAL_PROJECTS: ManualProject[] = [
     isFeatured: true,
   },
   {
+    name: 'HomeLab Portal',
+    fullName: 'brwyatt/homelab-portal',
+    description:
+      'HomeLab service directory portal for users. With filtering for group membership and network location.',
+    htmlUrl: 'https://github.com/brwyatt/homelab-portal',
+    homepage: 'https://home.brwyatt.net',
+    language: 'Python',
+    isFeatured: true,
+  },
+  {
     name: 'ansible-config',
     fullName: 'brwyatt/ansible-config',
     description:
