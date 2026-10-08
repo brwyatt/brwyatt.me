@@ -53,6 +53,15 @@ jobs:
       - name: Build Web Application
         run: npm run build -w @brwyatt/web
 
+      - name: Configure Robots.txt
+        run: |
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            cp packages/web/dist/robots.prod.txt packages/web/dist/robots.txt
+          else
+            cp packages/web/dist/robots.non-prod.txt packages/web/dist/robots.txt
+          fi
+          rm packages/web/dist/robots.prod.txt packages/web/dist/robots.non-prod.txt
+
       - name: Configure AWS Credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v6
         with:
